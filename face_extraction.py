@@ -33,7 +33,7 @@ def crop_img(raw_img, face_classifier, name, number, output_path):
         face = img[y : y + h, x : x + w]
         # cv2.imshow("face", face)
         number = str(number)
-        cv2.imwrite(output_path + number + name + ".jpg", face)
+        cv2.imwrite(output_path + name + number + ".jpg", face)
     # cv2.imshow("img", img)
     cv2.waitKey(0)
 
