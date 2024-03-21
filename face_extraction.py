@@ -32,16 +32,13 @@ def crop_img(raw_img, face_classifier, name, number, output_path):
     face = face_classifier.detectMultiScale(gray_img, scaleFactor=1.1, minNeighbors=6)
     for x, y, w, h in face:
         # cv2.rectangle(img, (x, y), (x + w, y + h), (0, 0, 255), 2)
-        face = gray_img[y : y + h, x : x + w]
-        face = cv2.resize(face, (30, 30))
+        face = img[y : y + h, x : x + w]
+        # face = cv2.resize(face, (30, 30))
         # cv2.imshow("face", face)
         number = str(number)
         cv2.imwrite(output_path + name + "-" + number + ".jpg", face)
     # cv2.imshow("img", img)
     cv2.waitKey(0)
-
-
-# TODO: Convert images in .HEIC format
 
 
 for person in names:
