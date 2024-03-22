@@ -28,10 +28,10 @@ def select_training_set(images, names, num_images):
     test_images = []
     for i in range(len(images)):
         if dict_names[names[i]][0] < num_images:
-            train_images.append(i)
+            train_images.append(images[i])
             dict_names[names[i]][0] += 1
         else:
-            test_images.append(i)
+            test_images.append(images[i])
             dict_names[names[i]][1] += 1
     for name, counts in dict_names.items():
         print(f"{name}: Train images = {counts[0]}, Test images = {counts[1]}")
@@ -70,6 +70,9 @@ def calculate_explained_variance(eigenvalues):
 
 # Create eigenface projection space
 def create_eigenface_space(eigenvectors, mean_face, images):
+    print(eigenvectors.shape)
+    print(mean_face.shape)
+    print(images.shape)
     return np.dot(images - mean_face, eigenvectors)
 
 
@@ -118,37 +121,47 @@ def plot_images(images, names, width, height, start_idx, end_idx):
 path = "/home/ge/MCD/Data Mining Avanzado/DMA-eigenfaces-output/"
 
 # Read images
-images, names = read_images(path)
+images, names = read_images(path)  # Images matrix -->(num_images, 900), names -->list
 
 # Select training set
-train, test = select_training_set(images, names, 8)
+train, test = select_training_set(
+    images, names, 6
+)  # train --> matrix(num_images*names, 900)
 
 # Calculate mean face
-mean_face = calculate_mean_face(images)
+mean_face = calculate_mean_face(train)  # array(900,)
 
 # Plot mean face
 # plt.imshow(mean_face.reshape(30, 30), cmap="gray")
 # plt.show()
 
 # Subtract mean face from images
-subtracted_images = substract_mean_face(images, mean_face)
+subtracted_images = substract_mean_face(
+    train, mean_face
+)  # matrix(num_images*names, 900)
 
 # Calculate covariance matrix
-covariance_matrix = calculate_covariance(subtracted_images)
+covariance_matrix = calculate_covariance(subtracted_images)  # matrix(900, 900)
 
 # Get Eeigenvalues and eigenvectors
-eigenvalues, eigenvectors = calculate_eigenfaces(covariance_matrix)
+eigenvalues, eigenvectors = calculate_eigenfaces(
+    covariance_matrix
+)  # array(900,), matrix(900, 900)
 
 # Calculate explained variance
-explained_variance = calculate_explained_variance(eigenvalues)
-n_components = 200
-print(explained_variance[:n_components])  # With 100 we explain 93% of the variance
-reduced_eigenvectors = eigenvectors[:, :n_components]
+explained_variance = calculate_explained_variance(eigenvalues)  # array(900,)
+n_components = 70
+print(explained_variance[:n_components])
+reduced_eigenvectors = eigenvectors[:, :n_components]  # matrix(900, n_components)
 
 # Project images into the reduced eigenface space
+reduced_eigenface_space = create_eigenface_space(
+    reduced_eigenvectors, mean_face, subtracted_images
+)  # matrix(num_images*names, n_components)
+
 
 # Calculate eigenface for a new face
-new_face = images[test[0]]
+new_face = test[0]  # array(900,)
 eigenface = calculate_eigenface(new_face, mean_face, reduced_eigenvectors)
 # Plot new face
 plt.imshow(eigenface.reshape(30, 30), cmap="gray")
