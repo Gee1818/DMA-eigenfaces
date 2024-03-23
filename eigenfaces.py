@@ -3,6 +3,7 @@ import os
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
+from cv2.cuda import printShortCudaDeviceInfo
 
 
 # Read training set
@@ -25,17 +26,25 @@ def select_training_set(images, names, num_images):
     for name in unique_names:
         dict_names[name] = [0, 0]
     train_images = []
+    train_names = []
     test_images = []
+    test_names = []
     for i in range(len(images)):
         if dict_names[names[i]][0] < num_images:
             train_images.append(images[i])
+            train_names.append(names[i])
             dict_names[names[i]][0] += 1
         else:
             test_images.append(images[i])
+            test_names.append(names[i])
             dict_names[names[i]][1] += 1
     for name, counts in dict_names.items():
         print(f"{name}: Train images = {counts[0]}, Test images = {counts[1]}")
-    return np.array(train_images), np.array(test_images)
+    print(len(train_images))
+    print(len(test_images))
+    print(len(train_names))
+    print(len(test_names))
+    return np.array(train_images), np.array(test_images), train_names, test_names
 
 
 # Compute mean face and substract from faces
@@ -70,17 +79,13 @@ def calculate_explained_variance(eigenvalues):
 
 # Create eigenface projection space
 def create_eigenface_space(eigenvectors, mean_face, images):
-    print(eigenvectors.shape)
-    print(mean_face.shape)
-    print(images.shape)
     return np.dot(images - mean_face, eigenvectors)
 
 
 # Calculate eigenface for a new face
-def calculate_eigenface(new_face, mean_face, reduced_eigenvectors):
+def calculate_eigenface(new_face, mean_face, eigenvectors):
     subtracted_new_face = new_face - mean_face
-    print(subtracted_new_face.shape)
-    return np.dot(reduced_eigenvectors, subtracted_new_face.T)
+    return np.dot(subtracted_new_face, eigenvectors)
 
 
 # Calculate Euclidean distance between eigenface and new face
@@ -113,7 +118,6 @@ def plot_images(images, names, width, height, start_idx, end_idx):
             if i < num_images and start_idx + i <= end_idx:
                 ax.imshow(images[start_idx + i].reshape(30, 30), cmap="gray")
                 ax.set_title(names[start_idx + i])
-
     plt.show()
 
 
@@ -124,16 +128,16 @@ path = "/home/ge/MCD/Data Mining Avanzado/DMA-eigenfaces-output/"
 images, names = read_images(path)  # Images matrix -->(num_images, 900), names -->list
 
 # Select training set
-train, test = select_training_set(
-    images, names, 6
+train, test, train_names, test_names = select_training_set(
+    images, names, 18
 )  # train --> matrix(num_images*names, 900)
 
 # Calculate mean face
 mean_face = calculate_mean_face(train)  # array(900,)
 
 # Plot mean face
-# plt.imshow(mean_face.reshape(30, 30), cmap="gray")
-# plt.show()
+plt.imshow(mean_face.reshape(30, 30), cmap="gray")
+plt.show()
 
 # Subtract mean face from images
 subtracted_images = substract_mean_face(
@@ -150,7 +154,7 @@ eigenvalues, eigenvectors = calculate_eigenfaces(
 
 # Calculate explained variance
 explained_variance = calculate_explained_variance(eigenvalues)  # array(900,)
-n_components = 70
+n_components = 120
 print(explained_variance[:n_components])
 reduced_eigenvectors = eigenvectors[:, :n_components]  # matrix(900, n_components)
 
@@ -159,18 +163,24 @@ reduced_eigenface_space = create_eigenface_space(
     reduced_eigenvectors, mean_face, subtracted_images
 )  # matrix(num_images*names, n_components)
 
+# TODO: Need to debug this or model is not working
 
 # Calculate eigenface for a new face
-new_face = test[0]  # array(900,)
-eigenface = calculate_eigenface(new_face, mean_face, reduced_eigenvectors)
-# Plot new face
-plt.imshow(eigenface.reshape(30, 30), cmap="gray")
-plt.show()
-
+new_face = train[20]  # array(900,)
+eigenface = calculate_eigenface(
+    new_face, mean_face, reduced_eigenvectors
+)  # array(n_components,)
 
 # Find the closest face
-closest_face = find_closest_face(reduced_eigenface_space, eigenface)
-print(f"Closest face: {names[train[closest_face]]}")
+closest_face = find_closest_face(reduced_eigenface_space, eigenface)  # Vector index
+
+# Plot closest face
+# Generate helper list to pass to plot_images
+comparison_images = [new_face, train[closest_face]]
+comparison_names = [train_names[20], train_names[closest_face]]
+
+# Plot comparison images
+plot_images(comparison_images, comparison_names, 1, 2, 0, 2)
 
 
 # Plot images
