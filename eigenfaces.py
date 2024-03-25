@@ -3,7 +3,6 @@ import os
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
-from cv2.cuda import printShortCudaDeviceInfo
 
 
 # Read training set
@@ -40,10 +39,6 @@ def select_training_set(images, names, num_images):
             dict_names[names[i]][1] += 1
     for name, counts in dict_names.items():
         print(f"{name}: Train images = {counts[0]}, Test images = {counts[1]}")
-    print(len(train_images))
-    print(len(test_images))
-    print(len(train_names))
-    print(len(test_names))
     return np.array(train_images), np.array(test_images), train_names, test_names
 
 
@@ -63,11 +58,12 @@ def calculate_covariance(images):
 
 
 # Calculate eigenvalues and eigenvectors from covariance matrix
-def calculate_eigenfaces(covariance_matrix):
+def calculate_eigenvalues(covariance_matrix):
     eigenvalues, eigenvectors = np.linalg.eig(covariance_matrix)
-    sort_eigenvalues = eigenvalues[np.argsort(eigenvalues)[::-1]]
-    sort_eigenvectors = eigenvectors[:, np.argsort(eigenvalues)[::-1]]
-    return sort_eigenvalues, sort_eigenvectors
+    idx = eigenvalues.argsort()[::-1]
+    eigenvalues = eigenvalues[idx]
+    eigenvectors = eigenvectors[:, idx]
+    return eigenvalues, eigenvectors
 
 
 # Calculate explained variance
@@ -78,26 +74,23 @@ def calculate_explained_variance(eigenvalues):
 
 
 # Create eigenface projection space
-def create_eigenface_space(eigenvectors, mean_face, images):
-    return np.dot(images - mean_face, eigenvectors)
+def create_eigenface_space(eigenvectors, images):
+    return np.dot(images, eigenvectors)
 
 
-# Calculate eigenface for a new face
+# Project new face
 def calculate_eigenface(new_face, mean_face, eigenvectors):
-    subtracted_new_face = new_face - mean_face
-    return np.dot(subtracted_new_face, eigenvectors)
-
-
-# Calculate Euclidean distance between eigenface and new face
-def calculate_euclidean_distance(eigenface, new_face):
-    return np.linalg.norm(eigenface - new_face)
+    new_standarized_face = substract_mean_face(new_face, mean_face)
+    projected_new_face = np.dot(new_standarized_face, eigenvectors)
+    return projected_new_face
 
 
 # Find the closest face
-def find_closest_face(eigenfaces, new_face):
+def find_closest_face(eigenvectors, new_face_projected):
     distances = []
-    for eigenface in eigenfaces:
-        distances.append(calculate_euclidean_distance(eigenface, new_face))
+    for i in range(len(eigenvectors)):
+        distance = np.linalg.norm(eigenvectors[i] - new_face_projected)
+        distances.append(distance)
     return np.argmin(distances)
 
 
@@ -129,7 +122,7 @@ images, names = read_images(path)  # Images matrix -->(num_images, 900), names -
 
 # Select training set
 train, test, train_names, test_names = select_training_set(
-    images, names, 18
+    images, names, 8
 )  # train --> matrix(num_images*names, 900)
 
 # Calculate mean face
@@ -140,49 +133,58 @@ plt.imshow(mean_face.reshape(30, 30), cmap="gray")
 plt.show()
 
 # Subtract mean face from images
-subtracted_images = substract_mean_face(
+train_standarized = substract_mean_face(
     train, mean_face
 )  # matrix(num_images*names, 900)
 
 # Calculate covariance matrix
-covariance_matrix = calculate_covariance(subtracted_images)  # matrix(900, 900)
+covariance_matrix = calculate_covariance(train_standarized)  # matrix(900, 900)
 
 # Get Eeigenvalues and eigenvectors
-eigenvalues, eigenvectors = calculate_eigenfaces(
+eigenvalues, eigenvectors = calculate_eigenvalues(
     covariance_matrix
 )  # array(900,), matrix(900, 900)
 
 # Calculate explained variance
 explained_variance = calculate_explained_variance(eigenvalues)  # array(900,)
-n_components = 120
+n_components = 80
 print(explained_variance[:n_components])
 reduced_eigenvectors = eigenvectors[:, :n_components]  # matrix(900, n_components)
 
 # Project images into the reduced eigenface space
 reduced_eigenface_space = create_eigenface_space(
-    reduced_eigenvectors, mean_face, subtracted_images
+    reduced_eigenvectors, train_standarized
 )  # matrix(num_images*names, n_components)
 
-# TODO: Need to debug this or model is not working
-
-# Calculate eigenface for a new face
-new_face = train[20]  # array(900,)
-eigenface = calculate_eigenface(
+# Project new face into eigenvectors space
+new_face, new_name = train[46], train_names[46]
+new_face_projected = calculate_eigenface(
     new_face, mean_face, reduced_eigenvectors
 )  # array(n_components,)
 
 # Find the closest face
-closest_face = find_closest_face(reduced_eigenface_space, eigenface)  # Vector index
+closest_face_index = find_closest_face(reduced_eigenface_space, new_face_projected)
+closest_face_name = train_names[closest_face_index]
+closest_face = train[closest_face_index]
 
 # Plot closest face
-# Generate helper list to pass to plot_images
-comparison_images = [new_face, train[closest_face]]
-comparison_names = [train_names[20], train_names[closest_face]]
+# Create a figure and axes for subplots
+fig, axes = plt.subplots(1, 2, figsize=(10, 5))
+
+# Plot closest face
+axes[0].imshow(closest_face.reshape(30, 30), cmap="gray")
+axes[0].set_title(closest_face_name)
+
+# Plot new face
+axes[1].imshow(new_face.reshape(30, 30), cmap="gray")
+axes[1].set_title(new_name)
+
+# Display the subplots
+plt.show()
 
 # Plot comparison images
-plot_images(comparison_images, comparison_names, 1, 2, 0, 2)
 
 
 # Plot images
-# plot_images(images, names, 1, 1, 0, 1)
+# plot_images(train, train_names, 2, 4, 24, 32)
 # plot_images(images, names, 5, 5, 30, 55)
