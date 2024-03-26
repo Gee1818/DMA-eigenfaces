@@ -129,8 +129,8 @@ train, test, train_names, test_names = select_training_set(
 mean_face = calculate_mean_face(train)  # array(900,)
 
 # Plot mean face
-plt.imshow(mean_face.reshape(30, 30), cmap="gray")
-plt.show()
+# plt.imshow(mean_face.reshape(30, 30), cmap="gray")
+# plt.show()
 
 # Subtract mean face from images
 train_standarized = substract_mean_face(
@@ -145,6 +145,9 @@ eigenvalues, eigenvectors = calculate_eigenvalues(
     covariance_matrix
 )  # array(900,), matrix(900, 900)
 
+# Plot eigenfaces
+plot_images(np.real(eigenvectors.T), range(1, 21), 4, 5, 0, 20)
+
 # Calculate explained variance
 explained_variance = calculate_explained_variance(eigenvalues)  # array(900,)
 n_components = 80
@@ -156,8 +159,13 @@ reduced_eigenface_space = create_eigenface_space(
     reduced_eigenvectors, train_standarized
 )  # matrix(num_images*names, n_components)
 
+# TODO: Add a function to find the closest face to every face in the test set
+# Result should be a vector with boolean values which results
+# from comparing the predicted name with the real name
+
 # Project new face into eigenvectors space
-new_face, new_name = train[46], train_names[46]
+i = 5
+new_face, new_name = test[i], test_names[i]
 new_face_projected = calculate_eigenface(
     new_face, mean_face, reduced_eigenvectors
 )  # array(n_components,)
