@@ -3,6 +3,7 @@ import os
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
+from numpy.lib.type_check import real
 
 
 # Read training set
@@ -150,7 +151,7 @@ plot_images(np.real(eigenvectors.T), range(1, 21), 4, 5, 0, 20)
 
 # Calculate explained variance
 explained_variance = calculate_explained_variance(eigenvalues)  # array(900,)
-n_components = 80
+n_components = 25
 print(explained_variance[:n_components])
 reduced_eigenvectors = eigenvectors[:, :n_components]  # matrix(900, n_components)
 
@@ -163,32 +164,79 @@ reduced_eigenface_space = create_eigenface_space(
 # Result should be a vector with boolean values which results
 # from comparing the predicted name with the real name
 
+
+# Function to evaluate all test set
+def evaluate_test(
+    test_images, test_names, reduced_eigenvectors, train_names, reduced_eigenface_space
+):
+    results_test_name = []
+    results_predicted_name = []
+    results = []
+    for i in range(len(test_images)):
+        new_face = test_images[i]
+        # Append new name to results
+        results_test_name.append(test_names[i])
+        # Project new face into eigenvectors space
+        new_face_projected = calculate_eigenface(
+            new_face, mean_face, reduced_eigenvectors
+        )
+        # Find the closest face from the training set
+        closest_face_index = find_closest_face(
+            reduced_eigenface_space, new_face_projected
+        )
+        # Append the predicted name to results
+        results_predicted_name.append(train_names[closest_face_index])
+    # Compare the predicted name with the real name
+
+    for i in range(len(results_test_name)):
+        if results_test_name[i] == results_predicted_name[i]:
+            results.append(True)
+        else:
+            results.append(False)
+        # print(
+        #     f"Real name: {results_test_name[i]}, Predicted name: {results_predicted_name[i]}, Result: {results[i]}"
+        # )
+    # Count the number of correct predictions
+    correct_predictions = sum(results)
+    print(f"Correct predictions: {correct_predictions} from {len(results)}")
+
+    # Show the incorrect predictions
+    incorrect_predictions = [i for i, x in enumerate(results) if not x]
+    for i in incorrect_predictions:
+        print(
+            f"Real name: {results_test_name[i]}, Predicted name: {results_predicted_name[i]}"
+        )
+
+
+evaluate_test(
+    test, test_names, reduced_eigenvectors, train_names, reduced_eigenface_space
+)
 # Project new face into eigenvectors space
-i = 5
-new_face, new_name = test[i], test_names[i]
-new_face_projected = calculate_eigenface(
-    new_face, mean_face, reduced_eigenvectors
-)  # array(n_components,)
+# i = 5
+# new_face, new_name = test[i], test_names[i]
+# new_face_projected = calculate_eigenface(
+#     new_face, mean_face, reduced_eigenvectors
+# )  # array(n_components,)
 
-# Find the closest face
-closest_face_index = find_closest_face(reduced_eigenface_space, new_face_projected)
-closest_face_name = train_names[closest_face_index]
-closest_face = train[closest_face_index]
+# # Find the closest face
+# closest_face_index = find_closest_face(reduced_eigenface_space, new_face_projected)
+# closest_face_name = train_names[closest_face_index]
+# closest_face = train[closest_face_index]
 
-# Plot closest face
-# Create a figure and axes for subplots
-fig, axes = plt.subplots(1, 2, figsize=(10, 5))
+# # Plot closest face
+# # Create a figure and axes for subplots
+# fig, axes = plt.subplots(1, 2, figsize=(10, 5))
 
-# Plot closest face
-axes[0].imshow(closest_face.reshape(30, 30), cmap="gray")
-axes[0].set_title(closest_face_name)
+# # Plot closest face
+# axes[0].imshow(closest_face.reshape(30, 30), cmap="gray")
+# axes[0].set_title(closest_face_name)
 
-# Plot new face
-axes[1].imshow(new_face.reshape(30, 30), cmap="gray")
-axes[1].set_title(new_name)
+# # Plot new face
+# axes[1].imshow(new_face.reshape(30, 30), cmap="gray")
+# axes[1].set_title(new_name)
 
-# Display the subplots
-plt.show()
+# # Display the subplots
+# plt.show()
 
 # Plot comparison images
 
