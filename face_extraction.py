@@ -6,11 +6,12 @@ from PIL import Image
 
 # Set path to photos
 
-path = "/home/ge/MCD/Data Mining Avanzado/DMA-eigenfaces-photos/"
-output_path = "/home/ge/MCD/Data Mining Avanzado/DMA-eigenfaces-output/"
+path = "/home/frank/maestria_mcd/nuestras_caras/Nuestras Caras-20240321T193416Z-001/Nuestras Caras/"
+output_path = "/home/frank/maestria_mcd/nuestras_caras/Nuestras Caras-20240321T193416Z-001/test_photos/"
+
 # Commented for thios to work in REPL
 script_path = os.path.dirname(__file__) + "/"
-print(script_path)
+#print(script_path)
 # script_path = "/home/ge/MCD/Data Mining Avanzado/DMA-eigenfaces/"
 
 # Read names

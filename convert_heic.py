@@ -5,7 +5,7 @@ import numpy as np
 
 
 # Get list of HEIF and HEIC files in directory
-directory = "/home/ge/MCD/Data Mining Avanzado/DMA-eigenfaces-photos/"
+directory = "/home/frank/maestria_mcd/nuestras_caras/Nuestras Caras-20240321T193416Z-001/Nuestras Caras/"
 
 names = []
 for dir in os.listdir(directory):
