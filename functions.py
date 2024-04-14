@@ -25,10 +25,8 @@ def select_training_set(images, names, num_images):
     dict_names = {}
     for name in unique_names:
         dict_names[name] = [0, 0]
-    train_images = []
-    train_names = []
-    test_images = []
-    test_names = []
+    train_images, train_names = [], []
+    test_images, test_names = [], []
     for i in range(len(images)):
         if dict_names[names[i]][0] < num_images:
             train_images.append(images[i])
@@ -38,8 +36,12 @@ def select_training_set(images, names, num_images):
             test_images.append(images[i])
             test_names.append(names[i])
             dict_names[names[i]][1] += 1
-    for name, counts in dict_names.items():
-        print(f"{name}: Train images = {counts[0]}, Test images = {counts[1]}")
+    print("=============================")
+    print("Name       | n_train | n_test")
+    print("-----------------------------")
+    for name, counts in sorted(dict_names.items()):
+        print("{:<10} | {:>7} | {:>6}".format(name, counts[0], counts[1]))
+    print("=============================")
     return np.array(train_images), np.array(test_images), train_names, test_names
 
 
@@ -76,13 +78,13 @@ def calculate_explained_variance(eigenvalues):
 
 # Create eigenface projection space
 def create_eigenface_space(eigenvectors, images):
-    return np.dot(images, eigenvectors)
+    return np.dot(images, eigenvectors).real
 
 
 # Project new face
 def calculate_eigenface(new_face, mean_face, eigenvectors):
     new_standarized_face = substract_mean_face(new_face, mean_face)
-    projected_new_face = np.dot(new_standarized_face, eigenvectors)
+    projected_new_face = np.dot(new_standarized_face, eigenvectors).real
     return projected_new_face
 
 

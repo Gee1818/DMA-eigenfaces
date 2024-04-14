@@ -107,6 +107,17 @@ def main():
 
     # Print results
     print("More distant faces are:", comb_max_dis)
+    
+    
+    # Create two DataFrames (train + test) with the first 60 PCs of each image
+    for (tag, split, names) in [("train", train, train_names), ("test", test, test_names)]:
+        centered_imgs = substract_mean_face(split, mean_face)
+        eigenspace = create_eigenface_space(reduced_eigenvectors, centered_imgs)
+        pca_df = pd.DataFrame(eigenspace)
+        pca_df.columns = ["PC"+str(i) for i in range(1, n_components+1)]
+        pca_df.insert(0, "Name", names, True)
+        pca_df.to_csv(f"components_{tag}.csv", index=False)
+    
 
 
     # Testing PCA accuracy. 
