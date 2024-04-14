@@ -1,9 +1,9 @@
 import os
+
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 from numpy.lib.type_check import real
-
 
 
 # Read training set
@@ -52,7 +52,7 @@ def calculate_mean_face(images):
 def substract_mean_face(images, mean_face):
     return images - mean_face
 
-    
+
 # Calculate covariance
 def calculate_covariance(images):
     return np.cov(images.T)
@@ -113,10 +113,12 @@ def plot_images(images, names, width, height, start_idx, end_idx):
                 ax.imshow(images[start_idx + i].reshape(30, 30), cmap="gray")
                 ax.set_title(names[start_idx + i])
     plt.show()
-    
-    
+
+
 # Function to evaluate all test set
-def evaluate_test(test_images, test_names, reduced_eigenvectors, train_names, reduced_eigenface_space):
+def evaluate_test(
+    test_images, test_names, reduced_eigenvectors, train_names, reduced_eigenface_space
+):
     results_test_name = []
     results_predicted_name = []
     results = []
@@ -125,9 +127,13 @@ def evaluate_test(test_images, test_names, reduced_eigenvectors, train_names, re
         # Append new name to results
         results_test_name.append(test_names[i])
         # Project new face into eigenvectors space
-        new_face_projected = calculate_eigenface(new_face, mean_face, reduced_eigenvectors)
+        new_face_projected = calculate_eigenface(
+            new_face, mean_face, reduced_eigenvectors
+        )
         # Find the closest face from the training set
-        closest_face_index = find_closest_face(reduced_eigenface_space, new_face_projected)
+        closest_face_index = find_closest_face(
+            reduced_eigenface_space, new_face_projected
+        )
         # Append the predicted name to results
         results_predicted_name.append(train_names[closest_face_index])
     # Compare the predicted name with the real name
@@ -144,5 +150,88 @@ def evaluate_test(test_images, test_names, reduced_eigenvectors, train_names, re
     # Show the incorrect predictions
     incorrect_predictions = [i for i, x in enumerate(results) if not x]
     for i in incorrect_predictions:
-        print(f"Real name: {results_test_name[i]}, Predicted name: {results_predicted_name[i]}")
-    
+        print(
+            f"Real name: {results_test_name[i]}, Predicted name: {results_predicted_name[i]}"
+        )
+
+
+# layer class
+class Layer:
+    def __init__(self, n_neurons, n_input):
+        self.weights = np.random.uniform(
+            -0.5, 0.5, size=(n_neurons, n_input)
+        )  # random weights
+        self.biases = np.random.uniform(-0.5, 0.5, size=(n_neurons, 1))  # random biases
+
+    # forward
+    def forward(self, inputs):
+        self.inputs = inputs  # save inputs for backpropagation
+        self.outputs = (
+            np.dot(self.weights, self.inputs) + self.biases
+        )  # calculate outputs for next layer
+        return self.outputs
+
+    # backward prop
+    def backward(self, output_gradient, learning_rate):
+        prev_layer_gradient = np.dot(
+            self.weights.T, output_gradient
+        )  # calculate gradient for previous layer
+        weights_gradient = np.dot(
+            output_gradient, self.inputs.T
+        )  # calculate gradient for weights
+        self.weights -= learning_rate * weights_gradient  # update weights
+        self.biases -= learning_rate * output_gradient  # update biases
+        return prev_layer_gradient
+
+
+# activation classes
+# linear
+class Purelin:
+    def __init__(self):
+        pass
+
+    def forward(self, x):
+        return x
+
+    def backward(self, output_gradient, learning_rate):
+        return output_gradient
+
+
+# sigmoid
+class Logsig:
+    def __init__(self):
+        self.output = 0
+
+    def forward(self, x):
+        self.output = 1 / (1 + np.exp(-x))
+        return self.output
+
+    def backward(self, output_gradient, learning_rate):
+        # return output_gradient * self.output * (1 - self.output)
+        return np.multiply(output_gradient, self.output * (1 - self.output))
+
+
+# tanh
+class Tansig:
+    def __init__(self):
+        self.output = 0
+
+    def forward(self, x):
+        self.output = 2 / (1 + np.exp(-2 * x)) - 1
+        return self.output
+
+    def backward(self, output_gradient, learning_rate):
+        return output_gradient * (1 - self.output * self.output)
+
+
+# loss
+
+
+def loss(y_true, y_pred):
+    loss = np.mean(np.power(y_true - y_pred, 2))
+    return loss
+
+
+def loss_prime(y_true, y_pred):
+    return 2 * (y_pred - y_true) / np.size(y_true)
+
