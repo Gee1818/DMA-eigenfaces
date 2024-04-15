@@ -1,28 +1,43 @@
-import os
-
-import cv2
 import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
 from numpy.lib.type_check import real
 
 from functions import *
 
 # Define path for input images
-path = "/home/frank/maestria_mcd/nuestras_caras/Nuestras Caras-20240321T193416Z-001/test_photos/"
-    
-    
+path = "/home/frank/maestria_mcd/nuestras_caras/Nuestras Caras-20240321T193416Z-001/1.test_photos/"
+mirror_path = "/home/frank/maestria_mcd/nuestras_caras/Nuestras Caras-20240321T193416Z-001/2.mirrored_images/"
+   
      
 def main():
     
     # Read images
     images, names = read_images(path)  # Images matrix -->(num_images, 900), names -->list
 
+    
+    # Flip images horizontally - DESCOMENTAR LINEA DE ABAJO PARA GENERAR IMAGENES ESPEJO --> DEBEMOS MOVERLO A HELPER_SCRIPTS.
+    #mirror_images(path, mirror_path)
+    mir_img, mir_names = read_images(mirror_path)
+
+    print(f"Original images: {images.shape} \n Original names: {len(names)}")
+    print(f"Mirrored images: {mir_img.shape} \n Mirrored names: {len(mir_names)}")
+
+    # Le pongo train para ver si funcionan los indices.
+    train = np.vstack((images, mir_img))
+    train_names = names + mir_names
+
+    print(f"Total images: {images.shape} \n Total names: {len(names)}")
+
+
+    
+    
+    '''
     # Select training set
     train, test, train_names, test_names = select_training_set(
         images, names, 8
     )  # train --> matrix(num_images*names, 900)
-
+    '''
+    
     # Calculate mean face
     mean_face = calculate_mean_face(train)  # array(900,)
 
@@ -58,15 +73,15 @@ def main():
     )  # matrix(num_images*names, n_components)
 
 
-    # Add a function to find the closest face to every face in the test set
+    # Find the closest face to every face in the test set
 
     print("\n")
     print("Calculando las caras mas cercanas..")
-    print(f"Matrix dimensions: {reduced_eigenface_space.shape}")
+    print(f"Matrix dimensions: {reduced_eigenface_space.shape}") 
     print(f"Comparing {reduced_eigenface_space.shape[0]} vectors with each other..")
 
     
-    # Create am empty dictionary to store the distances and vectors involved for each name combination.
+    # Create am empty dictionary to store the distances and indexes involved for each name combination.
     distance = {}
 
     for i in range(reduced_eigenface_space.shape[0]):
@@ -79,25 +94,29 @@ def main():
                 name_comb = f"{name} - {train_names[j]}"
                 inv_name_comb = f"{train_names[j]} - {name}"
                 if not inv_name_comb in distance:
-                    distance[name_comb] = (distance_iter , # Save the distance 
-                                           np.column_stack((reduced_eigenface_space[i], reduced_eigenface_space[j])) # save the 2 vectors
-                                         )
+                    distance[name_comb] = [distance_iter ,[i,j]] # Save the distance + save the 2 indexes
+                
     
     # Closest faces
     # Find the minimun score
     min_dist = min(distance.values())[0]
-    print(min_dist)
 
     # Get all the keys for the min distance
-    comb_min_dis = [key for key, value in distance.items() if value[0] == min_dist]
+    comb_min_dis = [key for key, value in distance.items() if value[0] == min_dist] # len = 1
 
 
     # Print results!
     print("Closest faces are:", comb_min_dis)
+    '''
+    #print faces
+    # Get the faces matrix
+    closest_faces = np.column_stack(([images[distance[comb_min_dis[0]][1][0]], # First face, comb_min_dis requires [0] cause its a list of lenght 1 
+                                      images[distance[comb_min_dis[0]][1][1]]]))  # Second face
     
-    #print(distance[comb_min_dis[0]][1].shape)
-    #plot_images(np.real(distance[comb_min_dis[0]][1]), range(1, 2), 4, 5, 0, 20)
-    
+    # Get the names:
+    names = comb_min_dis[0].split(" - ")
+    plot_images(np.real(closest_faces.T), [names[0] , names[1]], 1, 2, 0, 2)
+    '''
     
     # More distant faces
     max_dist = max(distance.values())[0]
@@ -108,7 +127,24 @@ def main():
     # Print results
     print("More distant faces are:", comb_max_dis)
     
+    '''
+    # Print the faces
+    # Get the faces matrix
+    distant_faces = np.column_stack(([images[distance[comb_max_dis[0]][1][0]], # First face, comb_min_dis requires [0] cause its a list of lenght 1 
+                                      images[distance[comb_max_dis[0]][1][1]]]))  # Second face
+    # Get the names:
+    names = comb_max_dis[0].split(" - ")
+    plot_images(np.real(distant_faces.T), [names[0] , names[1]], 1, 2, 0, 2)
+    '''
     
+    
+    
+    
+    
+    
+    
+    
+    '''
     # Create two DataFrames (train + test) with the first 60 PCs of each image
     for (tag, split, names) in [("train", train, train_names), ("test", test, test_names)]:
         centered_imgs = substract_mean_face(split, mean_face)
@@ -119,7 +155,8 @@ def main():
         pca_df.to_csv(f"components_{tag}.csv", index=False)
     
 
-
+    '''
+    
     # Testing PCA accuracy. 
     # Result should be a vector with boolean values which results
     # from comparing the predicted name with the real name

@@ -4,7 +4,7 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 from numpy.lib.type_check import real
-
+from PIL import Image
 
 # Read training set
 def read_images(path):
@@ -18,6 +18,26 @@ def read_images(path):
         names.append(image.split("-")[0])
     return np.array(images), names
 
+
+# Mirror images
+def mirror_images(path_in, path_out):
+    # Iterate over all files in the source directory
+    for filename in os.listdir(path_in):
+        # Check if the file is an image
+        if filename.endswith(".png") or filename.endswith(".jpg") or filename.endswith(".jpeg"):
+            # Open the image
+            image_path = os.path.join(path_in, filename)
+            image = Image.open(image_path)
+            
+            # Mirror the image horizontally
+            mirrored_image = image.transpose(Image.FLIP_LEFT_RIGHT)
+            
+            # Generate the save path for the mirrored image
+            save_path = os.path.join(path_out, filename+".png")
+            
+            # Save the mirrored image
+            #os.makedirs(save_path, exist_ok=True)
+            mirrored_image.save(save_path)
 
 # Select training set
 def select_training_set(images, names, num_images):
@@ -104,6 +124,7 @@ def find_closest_face(eigenvectors, new_face_projected):
 def plot_images(images, names, width, height, start_idx, end_idx):
     num_images = len(images[start_idx:end_idx])
     if num_images == 1:
+        print("1 IMAGEN")
         fig, ax = plt.subplots(1, 1, figsize=(30, 30))
         ax.imshow(images[start_idx].reshape(30, 30), cmap="gray")
         ax.set_title(names[start_idx])
