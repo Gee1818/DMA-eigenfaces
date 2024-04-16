@@ -11,7 +11,8 @@ def read_images(path):
     images = []
     names = []
     for image in os.listdir(path):
-        img = cv2.imread(path + image)
+        img_dir = os.path.join(path, './'+image)
+        img = cv2.imread(img_dir)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         img = cv2.resize(img, (30, 30))
         images.append(img.flatten())
@@ -25,15 +26,17 @@ def select_training_set(images, names, num_images):
     dict_names = {}
     for name in unique_names:
         dict_names[name] = [0, 0]
-    train_images, train_names = [], []
-    test_images, test_names = [], []
+    train_images, train_images_idx, train_names = [], [], []
+    test_images, test_images_idx, test_names = [], [], []
     for i in range(len(images)):
         if dict_names[names[i]][0] < num_images:
             train_images.append(images[i])
+            train_images_idx.append(i)
             train_names.append(names[i])
             dict_names[names[i]][0] += 1
         else:
             test_images.append(images[i])
+            test_images_idx.append(i)
             test_names.append(names[i])
             dict_names[names[i]][1] += 1
     print("=============================")
@@ -42,7 +45,7 @@ def select_training_set(images, names, num_images):
     for name, counts in sorted(dict_names.items()):
         print("{:<10} | {:>7} | {:>6}".format(name, counts[0], counts[1]))
     print("=============================")
-    return np.array(train_images), np.array(test_images), train_names, test_names
+    return np.array(train_images), np.array(test_images), train_images_idx, test_images_idx, train_names, test_names
 
 
 # Compute mean face and substract from faces

@@ -19,9 +19,7 @@ def main():
     images, names = read_images(path)  # Images matrix -->(num_images, 900), names -->list
 
     # Select training set
-    train, test, train_names, test_names = select_training_set(
-        images, names, 8
-    )  # train --> matrix(num_images*names, 900)
+    train, test, train_idx, test_idx, train_names, test_names = select_training_set(images, names, 8)  # train --> matrix(num_images*names, 900)
 
     # Calculate mean face
     mean_face = calculate_mean_face(train)  # array(900,)
@@ -66,47 +64,44 @@ def main():
     print(f"Comparing {reduced_eigenface_space.shape[0]} vectors with each other..")
 
     
-    # Create am empty dictionary to store the distances and vectors involved for each name combination.
-    distance = {}
-
+    # Distances between vectors
+    distances = np.array(reduced_eigenface_space.shape[0] * [reduced_eigenface_space.shape[0] * [float('nan')]])
+    
     for i in range(reduced_eigenface_space.shape[0]):
-        name = train_names[i]
         for j in range(reduced_eigenface_space.shape[0]):
-            if name != train_names[j]:
-                distance_iter = np.linalg.norm(
-                    reduced_eigenface_space[i] - reduced_eigenface_space[j]
-                )
-                name_comb = f"{name} - {train_names[j]}"
-                inv_name_comb = f"{train_names[j]} - {name}"
-                if not inv_name_comb in distance:
-                    distance[name_comb] = (distance_iter , # Save the distance 
-                                           np.column_stack((reduced_eigenface_space[i], reduced_eigenface_space[j])) # save the 2 vectors
-                                         )
+            
+            if i // 8 == j // 8: # if vectors belong to the same person...
+                continue # ...skip
+            
+            # Calculate distance between ith and jth vector
+            dist = np.linalg.norm(reduced_eigenface_space[i] - reduced_eigenface_space[j])
+            
+            # Add to matrix
+            distances[i][j] = dist
+            distances[j][i] = dist
+            
+    index_max_dist = np.unravel_index(np.nanargmax(distances), distances.shape)
+                    
     
     # Closest faces
-    # Find the minimun score
-    min_dist = min(distance.values())[0]
-    print(min_dist)
-
-    # Get all the keys for the min distance
-    comb_min_dis = [key for key, value in distance.items() if value[0] == min_dist]
-
-
-    # Print results!
+    index_min_dist = np.unravel_index(np.nanargmin(distances), distances.shape)
+    comb_min_dis = [train_names[index_min_dist[0]], train_names[index_min_dist[1]]]
+    print("Min distance:", distances[index_min_dist])
     print("Closest faces are:", comb_min_dis)
     
-    #print(distance[comb_min_dis[0]][1].shape)
-    #plot_images(np.real(distance[comb_min_dis[0]][1]), range(1, 2), 4, 5, 0, 20)
+    # Most distant faces
+    index_max_dist = np.unravel_index(np.nanargmax(distances), distances.shape)
+    comb_max_dis = [train_names[index_max_dist[0]], train_names[index_max_dist[1]]]
+    print("Max distance:", distances[index_max_dist])
+    print("Most distant faces are:", comb_max_dis)
     
-    
-    # More distant faces
-    max_dist = max(distance.values())[0]
-
-    # Get all the keys for the max distance
-    comb_max_dis = [key for key, value in distance.items() if value[0] == max_dist]
-
-    # Print results
-    print("More distant faces are:", comb_max_dis)
+    # Print the faces
+    # Get the faces matrix
+    distant_faces = np.column_stack((images[train_idx[index_max_dist[0]]], images[train_idx[index_max_dist[1]]]))
+    # Get the names:
+    names = [train_names[index_max_dist[0]], train_names[index_max_dist[1]]]
+    # Plot:
+    plot_images(np.real(distant_faces.T), [names[0] , names[1]], 1, 2, 0, 2)
     
     
     # Create two DataFrames (train + test) with the first 60 PCs of each image
