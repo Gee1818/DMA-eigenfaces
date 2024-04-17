@@ -166,6 +166,15 @@ def main():
     # Plot images
     # plot_images(train, train_names, 2, 4, 24, 32)
     # plot_images(images, names, 5, 5, 30, 55)
+    from sklearn.decomposition import PCA
+
+    pca = PCA(n_components=60)
+
+    train = pca.fit_transform(train)
+
+    df = pd.DataFrame(train)
+
+    df.to_csv("train_pca.csv", index=False)
 
 
 if __name__ == "__main__":
