@@ -11,64 +11,39 @@ from functions_nn import Logsig, Tansig, loss, loss_prime
 
 # input data
 
-# x = pd.read_csv("/home/ge/MCD/Data Mining Avanzado/dma-ros/datasets/cero.txt", sep="\t")
+x = pd.read_csv("components_train.csv")
 # convert to numpy
-# X = np.array(x[["x1", "x2"]].values.tolist())
-# Y = np.array(x["y"].values.tolist())
+X = x.drop("Name", axis=1).to_numpy()
+Y = np.array(x["Name"].values.tolist())
+
+# one hot encoding
+
+
+def one_hot_encode(array):
+    unique = np.unique(array)
+    df = pd.DataFrame(0, columns=unique, index=range(len(array)))
+    for index, label in enumerate(array):
+        df.loc[index, label] = 1
+    return df.to_numpy()
+
+
+Y = one_hot_encode(Y)
 
 # # reshape
-# X = np.reshape(X, (X.shape[0], X.shape[1], 1))
-# Y = np.reshape(Y, (Y.shape[0], 1, 1))
-
-# fake data for testing
-X = np.random.randn(30, 60)  # 30 observations with 60 features
 X = np.reshape(X, (X.shape[0], X.shape[1], 1))
-Y = np.array(
-    [
-        [0, 0, 1, 0],
-        [0, 0, 1, 0],
-        [0, 0, 0, 1],
-        [0, 0, 1, 0],
-        [0, 0, 0, 1],
-        [0, 0, 0, 1],
-        [0, 0, 1, 0],
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [1, 0, 0, 0],
-        [0, 0, 1, 0],
-        [0, 0, 1, 0],
-        [0, 0, 0, 1],
-        [1, 0, 0, 0],
-        [0, 0, 1, 0],
-        [1, 0, 0, 0],
-        [0, 0, 1, 0],
-        [0, 0, 1, 0],
-        [0, 0, 0, 1],
-        [0, 0, 1, 0],
-        [0, 0, 1, 0],
-        [0, 0, 0, 1],
-        [0, 0, 0, 1],
-        [1, 0, 0, 0],
-        [1, 0, 0, 0],
-        [1, 0, 0, 0],
-        [0, 0, 1, 0],
-        [0, 0, 0, 1],
-        [1, 0, 0, 0],
-        [0, 0, 0, 1],
-    ]
-)
 Y = np.reshape(Y, (Y.shape[0], Y.shape[1], 1))
+
 
 # network architecture
 x = 60  # input features
-y = 4  # output features
+y = Y.shape[1]  # output features
 n1 = 8  # neurons in hidden layer 1
 n2 = 4  # neurons in hidden layer 2
 
 network = [Layer(n1, x), Tansig(), Layer(n2, n1), Tansig(), Layer(y, n2), Logsig()]
 # training parameters
 learning_rate = 0.1
-max_epochs = 10000
+max_epochs = 2000
 target_error = 1e-5
 error = 10
 epoch = 0
@@ -108,4 +83,4 @@ for x, y in zip(X, Y):
     output = x
     for layer in network:
         output = layer.forward(output)
-    print(f"X: {x.flatten()} Y: {y.flatten()} Pred: {output.flatten()}")
+    print(f"Y: {y.flatten()} Pred: {output.flatten()}")
