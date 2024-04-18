@@ -81,13 +81,13 @@ class Softmax:
 
     def backward(self, output_gradient, learning_rate):
         # may need reshaping (1, -1_
-        deriv = self.output * np.identity(self.output.size) - np.dot(
-            self.output.T, self.output
-        )
-        return np.dot(output_gradient, deriv)
+        # deriv = self.output * np.identity(self.output.size) - np.dot(
+        #     self.output.T, self.output
+        # )
+        # return np.dot(output_gradient, deriv)
         # another way
-        # n = np.size(self.output)
-        # return np.dot((np.identity(n) - self.output.T) * self.output, output_gradient)
+        n = np.size(self.output)
+        return np.dot((np.identity(n) - self.output.T) * self.output, output_gradient)
 
 
 # loss

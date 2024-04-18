@@ -37,8 +37,8 @@ Y = np.reshape(Y, (Y.shape[0], Y.shape[1], 1))
 # network architecture
 x = 60  # input features
 y = Y.shape[1]  # output features
-n1 = 8  # neurons in hidden layer 1
-n2 = 4  # neurons in hidden layer 2
+n1 = 18  # neurons in hidden layer 1
+n2 = 18  # neurons in hidden layer 2
 
 network = [Layer(n1, x), Tansig(), Layer(n2, n1), Tansig(), Layer(y, n2), Logsig()]
 # training parameters
@@ -78,9 +78,22 @@ while error > target_error and epoch < max_epochs:
     if epoch % 20 == 0:
         print(f"Epoch {epoch} Error {error}")
 
+# disable scientific notation
+np.set_printoptions(suppress=True, precision=2)
 # final prediction
 for x, y in zip(X, Y):
     output = x
     for layer in network:
         output = layer.forward(output)
     print(f"Y: {y.flatten()} Pred: {output.flatten()}")
+
+# export results to csv with Y and output
+results = []
+for x, y in zip(X, Y):
+    output = x
+    for layer in network:
+        output = layer.forward(output)
+    results.append(np.concatenate([y.flatten(), output.flatten()]))
+
+results = pd.DataFrame(results)
+results.to_csv("results.csv", index=False)
