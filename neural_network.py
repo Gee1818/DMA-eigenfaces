@@ -93,6 +93,7 @@ for x, y in zip(X, Y):
     output = x
     for layer in network:
         output = layer.forward(output)
+    output_formatted = np.round(output, decimals=2)
     results.append(np.concatenate([y.flatten(), output.flatten()]))
 
 results = pd.DataFrame(results)
