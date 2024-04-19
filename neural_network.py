@@ -4,10 +4,12 @@ import math
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from cv2.dnn import Layer
 
 from functions_nn import *
 from functions_nn import Logsig, Tansig, loss, loss_prime
+
+# from cv2.dnn import Layer
+
 
 # input data
 
@@ -24,10 +26,10 @@ def one_hot_encode(array):
     df = pd.DataFrame(0, columns=unique, index=range(len(array)))
     for index, label in enumerate(array):
         df.loc[index, label] = 1
-    return df.to_numpy()
+    return df.to_numpy(), unique
 
 
-Y = one_hot_encode(Y)
+Y, unique_values = one_hot_encode(Y)
 
 # # reshape
 X = np.reshape(X, (X.shape[0], X.shape[1], 1))
@@ -87,14 +89,21 @@ for x, y in zip(X, Y):
         output = layer.forward(output)
     print(f"Y: {y.flatten()} Pred: {output.flatten()}")
 
+
+image_sum = np.sum(Y, axis=0)
+dataset = np.column_stack(
+    (unique_values, image_sum, np.zeros(np.shape(Y[0]), dtype=int))
+)
+df = pd.DataFrame(data=dataset, columns=["Names", "img_qty", "True_Prediction"])
+
 # export results to csv with Y and output
-results = []
+
 for x, y in zip(X, Y):
     output = x
     for layer in network:
         output = layer.forward(output)
-    output_formatted = np.round(output, decimals=2)
-    results.append(np.concatenate([y.flatten(), output.flatten()]))
+    prediction = np.argmax(output)
+    if prediction == np.argmax(y):
+        df.iloc[prediction, 2] = int(df.iloc[prediction, 2]) + 1
 
-results = pd.DataFrame(results)
-results.to_csv("results.csv", index=False)
+print(df)
