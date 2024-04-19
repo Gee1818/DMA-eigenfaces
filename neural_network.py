@@ -102,8 +102,11 @@ for x, y in zip(X, Y):
     output = x
     for layer in network:
         output = layer.forward(output)
+    # TODO: define a minimun threshold for prediction
     prediction = np.argmax(output)
+    # TODO: Add a row to df for indeterminate predictions
     if prediction == np.argmax(y):
         df.iloc[prediction, 2] = int(df.iloc[prediction, 2]) + 1
 
+# TODO: Add a row for total image count and the total of correct predictions
 print(df)
