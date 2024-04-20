@@ -90,13 +90,28 @@ class Softmax:
         return np.dot((np.identity(n) - self.output.T) * self.output, output_gradient)
 
 
-# loss
+# loss MSE
 
 
-def loss(y_true, y_pred):
+def MSE_loss(y_true, y_pred):
     loss = np.mean(np.power(y_true - y_pred, 2))
     return loss
 
 
-def loss_prime(y_true, y_pred):
+def MSE_loss_prime(y_true, y_pred):
     return 2 * (y_pred - y_true) / np.size(y_true)
+
+
+# loss cross entropy
+
+
+def cross_loss(y_true, y_pred):
+    limit = 1e-10
+    y_pred = np.clip(y_pred, limit, 1 - limit)
+    losses = -np.sum(y_true * np.log(y_pred), axis=0)
+    return np.mean(losses)
+
+
+def cross_loss_prime(y_true, y_pred):
+    size = y_true.shape[0]
+    return (y_pred - y_true) / size

@@ -40,8 +40,8 @@ Y = np.reshape(Y, (Y.shape[0], Y.shape[1], 1))
 x = 60  # input features
 y = Y.shape[1]  # output features
 n1 = 14  # neurons in hidden layer 1
-n2 = 12  # neurons in hidden layer 2
-n3 = 12  # neurons in hidden layer 3
+n2 = 14  # neurons in hidden layer 2
+n3 = 14  # neurons in hidden layer 3
 
 network = [
     Layer(n1, x),
@@ -54,7 +54,7 @@ network = [
     Softmax(),
 ]
 # training parameters
-learning_rate = 0.01
+learning_rate = 0.1
 max_epochs = 10000
 target_error = 1e-5
 error = 10
@@ -72,15 +72,17 @@ while error > target_error and epoch < max_epochs:
             # print(f"output {output}")
             output = layer.forward(output)
 
-        # loss
-        gradient = loss_prime(y, output)
+        # loss comment the one you want to use
+        # gradient = MSE_loss_prime(y, output)
+        gradient = cross_loss_prime(y, output)
 
         # backward
         for layer in reversed(network):
             gradient = layer.backward(gradient, learning_rate)
 
-        # error
-        error += loss(y, output)
+        # error comment the one you want to use
+        # error += MSE_loss(y, output)
+        error += cross_loss(y, output)
 
     # update loop params
     epoch += 1
@@ -89,7 +91,7 @@ while error > target_error and epoch < max_epochs:
     # print epoch error
     if epoch % 20 == 0:
         print(f"Epoch {epoch} Error {error}")
-    if epoch == 5000:
+    if epoch % 4000 == 0:
         learning_rate = learning_rate / 10
 
 # disable scientific notation
