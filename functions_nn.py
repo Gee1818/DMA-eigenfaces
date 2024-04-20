@@ -107,11 +107,12 @@ def MSE_loss_prime(y_true, y_pred):
 
 def cross_loss(y_true, y_pred):
     limit = 1e-10
-    y_pred = np.clip(y_pred, limit, 1 - limit)
+    y_pred = np.clip(y_pred, limit, 1 - limit) # prevents y_pred=0 since log(0) is undefined
     losses = -np.sum(y_true * np.log(y_pred), axis=0)
     return np.mean(losses)
 
 
 def cross_loss_prime(y_true, y_pred):
     size = y_true.shape[0]
-    return (y_pred - y_true) / size
+    #return (y_pred - y_true) / size
+    return - (y_true / y_pred) / size

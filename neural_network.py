@@ -6,9 +6,12 @@ import numpy as np
 import pandas as pd
 
 from functions_nn import *
-from functions_nn import Logsig, Tansig, loss, loss_prime
+from functions_nn import Logsig, Tansig, cross_loss, cross_loss_prime
 
 # from cv2.dnn import Layer
+
+# set seed for reproducibility
+np.random.seed(341)
 
 
 # input data
@@ -20,13 +23,18 @@ Y = np.array(x["Name"].values.tolist())
 
 # one hot encoding
 
-
 def one_hot_encode(array):
     unique = np.unique(array)
     df = pd.DataFrame(0, columns=unique, index=range(len(array)))
     for index, label in enumerate(array):
         df.loc[index, label] = 1
     return df.to_numpy(), unique
+
+def one_hot_encode_test(array, unique_train):
+    df = pd.DataFrame(0, columns=unique_train, index=range(len(array)))
+    for index, label in enumerate(array):
+        df.loc[index, label] = 1
+    return df.to_numpy()
 
 
 Y, unique_values = one_hot_encode(Y)
@@ -54,9 +62,9 @@ network = [
     Softmax(),
 ]
 # training parameters
-learning_rate = 0.1
+learning_rate = 1
 max_epochs = 10000
-target_error = 1e-5
+target_error = 1e-2
 error = 10
 epoch = 0
 
@@ -131,3 +139,42 @@ df["img_qty"] = pd.to_numeric(df["img_qty"], errors="coerce")
 # calculate accuracy
 accuracy = df["True_Prediction"].sum() / df["img_qty"].sum()
 print("Accuracy: {:.2%}".format(accuracy))
+
+
+# ==============================================================
+
+
+# Compare with test dataset
+x_test = pd.read_csv("components_test.csv")
+
+X_test = x_test.drop("Name", axis=1).to_numpy()
+Y_test = np.array(x_test["Name"].values.tolist())
+
+Y_test = one_hot_encode_test(Y_test, unique_values)
+
+X_test = np.reshape(X_test, (X_test.shape[0], X_test.shape[1], 1))
+Y_test = np.reshape(Y_test, (Y_test.shape[0], Y_test.shape[1], 1))
+
+# Forward pass through the net
+num, den = 0, 0
+for x, y in zip(X_test, Y_test):
+        output = x
+        for layer in network:
+            output = layer.forward(output)
+
+        parsed_output = np.zeros(output.shape[0], dtype = int)
+        guessed_response = np.argmax(output)
+        parsed_output[guessed_response] = 1
+
+        parsed_y = np.reshape(y, y.shape[0])
+
+        #print("Output:", parsed_output)
+        #print("Answer:", parsed_y)
+        #print()
+
+        if np.array_equal(parsed_y, parsed_output):
+            num += 1
+        den += 1
+
+# Check accuracy on test set
+print("Test accuracy: {frac} ({num} correct out of {den}).".format(num = num, den = den, frac = num/den))
