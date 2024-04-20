@@ -39,13 +39,23 @@ Y = np.reshape(Y, (Y.shape[0], Y.shape[1], 1))
 # network architecture
 x = 60  # input features
 y = Y.shape[1]  # output features
-n1 = 18  # neurons in hidden layer 1
-n2 = 18  # neurons in hidden layer 2
+n1 = 14  # neurons in hidden layer 1
+n2 = 12  # neurons in hidden layer 2
+n3 = 12  # neurons in hidden layer 3
 
-network = [Layer(n1, x), Tansig(), Layer(n2, n1), Tansig(), Layer(y, n2), Logsig()]
+network = [
+    Layer(n1, x),
+    Tansig(),
+    Layer(n2, n1),
+    Tansig(),
+    Layer(n3, n2),
+    Tansig(),
+    Layer(y, n3),
+    Softmax(),
+]
 # training parameters
-learning_rate = 0.1
-max_epochs = 2000
+learning_rate = 0.01
+max_epochs = 10000
 target_error = 1e-5
 error = 10
 epoch = 0
@@ -79,6 +89,8 @@ while error > target_error and epoch < max_epochs:
     # print epoch error
     if epoch % 20 == 0:
         print(f"Epoch {epoch} Error {error}")
+    if epoch == 5000:
+        learning_rate = learning_rate / 10
 
 # disable scientific notation
 np.set_printoptions(suppress=True, precision=2)
@@ -87,7 +99,7 @@ for x, y in zip(X, Y):
     output = x
     for layer in network:
         output = layer.forward(output)
-    print(f"Y: {y.flatten()} Pred: {output.flatten()}")
+    # print(f"Y: {y.flatten()} Pred: {output.flatten()}")
 
 
 image_sum = np.sum(Y, axis=0)
@@ -110,3 +122,10 @@ for x, y in zip(X, Y):
 
 # TODO: Add a row for total image count and the total of correct predictions
 print(df)
+# convert to numeric , was giving error
+df["True_Prediction"] = pd.to_numeric(df["True_Prediction"], errors="coerce")
+df["img_qty"] = pd.to_numeric(df["img_qty"], errors="coerce")
+
+# calculate accuracy
+accuracy = df["True_Prediction"].sum() / df["img_qty"].sum()
+print("Accuracy: {:.2%}".format(accuracy))
