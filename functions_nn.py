@@ -116,3 +116,8 @@ def cross_loss_prime(y_true, y_pred):
     size = y_true.shape[0]
     #return (y_pred - y_true) / size
     return - (y_true / y_pred) / size
+    
+
+def standardize(df):
+	normalized_df = (df - df.mean())/df.std()
+	return normalized_df

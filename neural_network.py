@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 
 from functions_nn import *
-from functions_nn import Logsig, Tansig, cross_loss, cross_loss_prime
+
 
 # from cv2.dnn import Layer
 
@@ -18,7 +18,9 @@ np.random.seed(341)
 
 x = pd.read_csv("components_train.csv")
 # convert to numpy
-X = x.drop("Name", axis=1).to_numpy()
+X = x.drop("Name", axis=1)
+X = standardize(X)
+X = X.to_numpy()
 Y = np.array(x["Name"].values.tolist())
 
 # one hot encoding
@@ -47,24 +49,25 @@ Y = np.reshape(Y, (Y.shape[0], Y.shape[1], 1))
 # network architecture
 x = 60  # input features
 y = Y.shape[1]  # output features
-n1 = 14  # neurons in hidden layer 1
-n2 = 14  # neurons in hidden layer 2
-n3 = 14  # neurons in hidden layer 3
+n1 = 12  # neurons in hidden layer 1
+n2 = 12  # neurons in hidden layer 2
+#n3 = 14  # neurons in hidden layer 3
 
 network = [
     Layer(n1, x),
     Tansig(),
     Layer(n2, n1),
     Tansig(),
-    Layer(n3, n2),
-    Tansig(),
-    Layer(y, n3),
+    #Layer(n3, n2),
+    #Tansig(),
+    #Layer(y, n3),
+    Layer(y, n2),
     Softmax(),
 ]
 # training parameters
 learning_rate = 1
-max_epochs = 10000
-target_error = 1e-2
+max_epochs = 100
+target_error = 1e-4
 error = 10
 epoch = 0
 
@@ -147,7 +150,9 @@ print("Accuracy: {:.2%}".format(accuracy))
 # Compare with test dataset
 x_test = pd.read_csv("components_test.csv")
 
-X_test = x_test.drop("Name", axis=1).to_numpy()
+X_test = x_test.drop("Name", axis=1)
+X_test = standardize(X_test)
+X_test = X_test.to_numpy()
 Y_test = np.array(x_test["Name"].values.tolist())
 
 Y_test = one_hot_encode_test(Y_test, unique_values)
