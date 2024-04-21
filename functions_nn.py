@@ -116,7 +116,21 @@ def cross_loss_prime(y_true, y_pred):
     size = y_true.shape[0]
     #return (y_pred - y_true) / size
     return - (y_true / y_pred) / size
-    
+
+class CrossEntropyLoss:
+    def __init__(self):
+        self.limit = 1e-10
+
+    def calc(self, y_true, y_pred):
+        y_pred = np.clip(y_pred, self.limit, 1 - self.limit)
+        losses = -np.sum(y_true * np.log(y_pred), axis=0)
+        return np.mean(losses)
+
+    def prime(self, y_true, y_pred):
+        size = y_true.shape[0]
+        return - (y_true / y_pred) / size
+
+
 
 def standardize(df):
 	normalized_df = (df - df.mean())/df.std()
