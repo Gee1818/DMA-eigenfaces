@@ -63,7 +63,8 @@ class Tansig:
         self.output = 0
 
     def forward(self, x):
-        self.output = 2 / (1 + np.exp(-2 * x)) - 1
+        self.output = np.tanh(x)
+        #self.output = 2 / (1 + np.exp(-2 * x)) - 1
         return self.output
 
     def backward(self, output_gradient, learning_rate):
@@ -76,6 +77,7 @@ class Softmax:
         self.output = 0  # initialize output
 
     def forward(self, x):
+        x -= np.max(x)  # softmax stabilization trick
         self.output = np.exp(x) / np.sum(np.exp(x), axis=0)
         return self.output
 
@@ -127,8 +129,9 @@ class CrossEntropyLoss:
         return np.mean(losses)
 
     def prime(self, y_true, y_pred):
+        epsilon = 1e-10
         size = y_true.shape[0]
-        return - (y_true / y_pred) / size
+        return - (y_true / (y_pred + epsilon)) / size
 
 
 
