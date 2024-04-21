@@ -8,7 +8,7 @@ from time import time
 start = time()
 
 # Get list of HEIF and HEIC files in directory
-directory = "/home/frank/maestria_mcd/nuestras_caras/Nuestras Caras-20240321T193416Z-001/Nuestras Caras/"
+directory = "../3.nuestras_caras_raw/"
 
 names = [dir for dir in os.listdir(directory)]
 

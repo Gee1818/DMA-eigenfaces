@@ -7,8 +7,8 @@ from time import time
 start = time()
 
 # Set path to photos
-path = "/home/frank/maestria_mcd/nuestras_caras/Nuestras Caras-20240321T193416Z-001/Nuestras Caras/"
-output_path = "/home/frank/maestria_mcd/nuestras_caras/Nuestras Caras-20240321T193416Z-001/test_photos/"
+path = "../3.nuestras_caras_raw/"
+output_path = "../1.cropped_photos/"
 
 # Commented for thios to work in REPL
 script_path = os.path.dirname(__file__) + "/"

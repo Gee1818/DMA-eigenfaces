@@ -19,11 +19,11 @@ def mirror_images(path_in, path_out):
             save_path = os.path.join(path_out, filename)
             
             # Save the mirrored image
-            os.makedirs(save_path, exist_ok=True) #comentar si genera algun error
+            #os.makedirs(path_out, exist_ok=True) #comentar si genera algun error
             mirrored_image.save(save_path)
             
 
-path_photos = "../1.test_photos/"
+path_photos = "../1.cropped_photos/"
 path_output = "../2.mirrored_images/"
 
 mirror_images(path_photos, path_output)

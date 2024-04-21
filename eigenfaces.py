@@ -8,7 +8,7 @@ from functions import *
 # Define path for input images
 path_og = "1.test_photos/"
 path_mirrored = "2.mirrored_images/" 
-number_of_images_train = 16
+number_of_images_train = 10
      
 def main():
     
@@ -23,7 +23,7 @@ def main():
     print(images.shape)
     
     # Select training set
-    train, test, train_idx, test_idx, train_names, test_names = select_training_set(images, names, 8)  # train --> matrix(num_images*names, 900)
+    train, test, train_idx, test_idx, train_names, test_names = select_training_set(images, names, number_of_images_train )  # train --> matrix(num_images*names, 900)
 
 
     
@@ -72,30 +72,31 @@ def main():
         pca_df.insert(0, "Name", names, True)
         pca_df.sort_values(by="Name", inplace=True)
         pca_df.to_csv(f"components_{tag}.csv", index=False)
+        if tag == "train": 
+            train_df = pca_df.copy()
     
     
     
     # Add a function to find the closest face to every face in the test set
 
-    print(pca_df.head(15))
+   
 
     print("\n")
     print("Calculando las caras mas cercanas..")
-  
-    print(f"Comparing {pca_df.shape[0]} vectors with each other..")
+    print(f"Comparing {train_df.shape[0]} vectors with each other..")
 
     
     # Distances between vectors
-    distances = np.array(pca_df.shape[0] * [pca_df.shape[0] * [float('nan')]])
+    distances = np.array(train_df.shape[0] * [train_df.shape[0] * [float('nan')]])
     
-    for i in range(pca_df.shape[0]):
-        for j in range(pca_df.shape[0]):
+    for i in range(train_df.shape[0]):
+        for j in range(train_df.shape[0]):
             
             if i // number_of_images_train  == j // number_of_images_train : # if vectors belong to the same person...
                 continue # ...skip
             
             # Calculate distance between ith and jth vector
-            dist = np.linalg.norm(pca_df.iloc[i, 1:] - pca_df.iloc[j, 1:])
+            dist = np.linalg.norm(train_df.iloc[i, 1:] - train_df.iloc[j, 1:])
             
             # Add to matrix
             distances[i][j] = dist
@@ -116,7 +117,7 @@ def main():
     # Get the names:
     names = [train_names[index_min_dist[0]], train_names[index_min_dist[1]]]
     # Plot:
-    #plot_images(np.real(distant_faces.T), [names[0] , names[1]], 1, 2, 0, 2)
+    plot_images(np.real(distant_faces.T), [names[0] , names[1]], 1, 2, 0, 2)
     
     
     
@@ -132,7 +133,7 @@ def main():
     # Get the names:
     names = [train_names[index_max_dist[0]], train_names[index_max_dist[1]]]
     # Plot:
-    #plot_images(np.real(distant_faces.T), [names[0] , names[1]], 1, 2, 0, 2)
+    plot_images(np.real(distant_faces.T), [names[0] , names[1]], 1, 2, 0, 2)
     
     
    
