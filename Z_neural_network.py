@@ -73,13 +73,9 @@ nn = n_network(params, layers, activations, loss)
 # Training network
 
 nn.train(X, Y)
-asd = nn.predict(X)
 evaluations = nn.evaluate(X, Y)
 
-print(asd)
-print(len(asd))
-
-#print(nn)
+print(nn)
 
 
 

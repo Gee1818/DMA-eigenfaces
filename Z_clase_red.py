@@ -4,7 +4,7 @@ import numpy as np
 np.set_printoptions(suppress=True, precision=2)
 
 class n_network:
-    def __init__(self, params, layers ,activations,  loss_function ):
+    def __init__(self, params, layers, activations, loss_function):
         self.layers = layers #list of layer clasess
         self.learning_rate = params['learning_rate']
         self.max_epochs = params['epochs']
@@ -25,16 +25,12 @@ class n_network:
             for x, y in zip(X, Y):
                 
                 # Forward
-                input = x
-                
-                # Layer 1
-                output = self.layers[0].forward(input) #z_1
-                activation = self.activations[0].forward(output) #a_1
+                activation = x # input
                 
                 # hidden layers
-                for layer , activf in zip(self.layers[1:-1] , self.activations[1:-1]):
-                    output = layer.forward(activation) # z_n-1
-                    activation = activf.forward(output) #a_n-1
+                for layer , activf in zip(self.layers[:-1] , self.activations[:-1]):
+                    output = layer.forward(activation) # z_j
+                    activation = activf.forward(output) #a_j
                     
                 # output layer
                 output = self.layers[-1].forward(activation) #z_n
@@ -45,11 +41,12 @@ class n_network:
                 gradient = self.loss.prime(y, activation_output)
                 
                 # Backward        
-                for layer in reversed(self.layers):
+                layers_and_activs = [val for pair in zip(self.layers, self.activations) for val in pair] # https://stackoverflow.com/a/7946825
+                for layer in reversed(layers_and_activs):
                     gradient = layer.backward(gradient, self.learning_rate)
                 
                 # Error
-                error += self.loss.calc(y, output)
+                error += self.loss.calc(y, activation_output)
         
             # Update loop params
             epoch += 1
@@ -74,13 +71,11 @@ class n_network:
         
         predictions = [] 
         
-        for input in X:
-            # First layer
-            output = self.layers[0].forward(input) # z_1
-            activation = self.activations[0].forward(output) # a_1     
+        for x in X:
+            activation = x
             
-             # hidden layers
-            for layer, activf in zip(self.layers[1:-1] , self.activations[1:-1]):
+            # hidden layers
+            for layer, activf in zip(self.layers[:-1] , self.activations[:-1]):
                 output = layer.forward(activation)
                 activation = activf.forward(output)
     
@@ -89,7 +84,7 @@ class n_network:
             output = self.layers[-1].forward(activation)
             activation_output = self.activations[-1].forward(output)
             
-            predictions.append(np.argmax(activation_output, axis=0))      
+            predictions.append(np.argmax(activation_output, axis=0)[0])      
         
         return predictions
     
