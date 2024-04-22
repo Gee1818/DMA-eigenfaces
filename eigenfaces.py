@@ -25,7 +25,15 @@ def main():
     # Select training set
     train, test, train_idx, test_idx, train_names, test_names = select_training_set(images, names, number_of_images_train)  # train --> matrix(num_images*names, 900)
 
+    # Sort train set
+    train_idx = [idx for _, idx in sorted(zip(train_names, train_idx))]
+    train = [img for _, img in sorted(zip(train_names, train), key=lambda x: x[0])]
+    train_names = sorted(train_names)
 
+    # Sort test set
+    test_idx = [idx for _, idx in sorted(zip(test_names, test_idx))]
+    test = [img for _, img in sorted(zip(test_names, test), key=lambda x: x[0])]
+    test_names = sorted(test_names)
     
     # Calculate mean face
     mean_face = calculate_mean_face(train)  # array(900,)
