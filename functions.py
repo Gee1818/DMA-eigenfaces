@@ -3,6 +3,7 @@ import os
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
+import random
 from numpy.lib.type_check import real
 
 
@@ -24,21 +25,32 @@ def read_images(path):
 def select_training_set(images, names, num_images):
     unique_names = list(set(names))
     dict_names = {}
-    for name in unique_names:
-        dict_names[name] = [0, 0]
     train_images, train_images_idx, train_names = [], [], []
     test_images, test_images_idx, test_names = [], [], []
-    for i in range(len(images)):
-        if dict_names[names[i]][0] < num_images:
-            train_images.append(images[i])
-            train_images_idx.append(i)
-            train_names.append(names[i])
-            dict_names[names[i]][0] += 1
-        else:
-            test_images.append(images[i])
-            test_images_idx.append(i)
-            test_names.append(names[i])
-            dict_names[names[i]][1] += 1
+
+    random.seed(505)
+
+    # Iterate through the people
+    for unique_name in unique_names:
+        # Get the indices of every photo belonging to this person
+        name_indices = [i for i, name in enumerate(names) if name == unique_name]
+        # Randomly select n (num_images) of these indices
+        train_indices = random.sample(name_indices, num_images)
+        train_images_idx += train_indices
+        # The non-selected indices go to test
+        test_indices = list(set(name_indices).difference(set(train_indices)))
+        test_images_idx += test_indices
+        # Count train and test images for each person
+        dict_names[unique_name] = [len(train_indices), len(test_indices)]
+
+    for idx in train_images_idx:
+        train_images.append(images[idx])
+        train_names.append(names[idx])
+
+    for idx in test_images_idx:
+        test_images.append(images[idx])
+        test_names.append(names[idx])    
+    
     print("=============================")
     print("Name       | n_train | n_test")
     print("-----------------------------")

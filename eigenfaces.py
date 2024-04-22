@@ -6,7 +6,7 @@ from numpy.lib.type_check import real
 from functions import *
 
 # Define path for input images
-path_og = "1.test_photos/"
+path_og = "1.cropped_photos/"
 path_mirrored = "2.mirrored_images/" 
 number_of_images_train = 10
      
@@ -23,7 +23,7 @@ def main():
     print(images.shape)
     
     # Select training set
-    train, test, train_idx, test_idx, train_names, test_names = select_training_set(images, names, number_of_images_train )  # train --> matrix(num_images*names, 900)
+    train, test, train_idx, test_idx, train_names, test_names = select_training_set(images, names, number_of_images_train)  # train --> matrix(num_images*names, 900)
 
 
     
@@ -43,9 +43,7 @@ def main():
     covariance_matrix = calculate_covariance(train_standarized)  # matrix(900, 900)
 
     # Get Eeigenvalues and eigenvectors
-    eigenvalues, eigenvectors = calculate_eigenvalues(
-        covariance_matrix
-    )  # array(900,), matrix(900, 900)
+    eigenvalues, eigenvectors = calculate_eigenvalues(covariance_matrix)  # array(900,), matrix(900, 900)
 
     # Plot eigenfaces
     #plot_images(np.real(eigenvectors.T), range(1, 21), 4, 5, 0, 20)
@@ -136,64 +134,6 @@ def main():
     plot_images(np.real(distant_faces.T), [names[0] , names[1]], 1, 2, 0, 2)
     
     
-   
-        
-    
-
-
-
-
-
-
-
-    # Testing PCA accuracy. 
-    # Result should be a vector with boolean values which results
-    # from comparing the predicted name with the real name
-    
-    
-    
-    '''
-    evaluate_test(
-        test, test_names, reduced_eigenvectors, train_names, reduced_eigenface_space
-    )
-
-    '''
-
-
-    # Project new face into eigenvectors space
-    # i = 5
-    # new_face, new_name = test[i], test_names[i]
-    # new_face_projected = calculate_eigenface(
-    #     new_face, mean_face, reduced_eigenvectors
-    # )  # array(n_components,)
-
-    # # Find the closest face
-    # closest_face_index = find_closest_face(reduced_eigenface_space, new_face_projected)
-    # closest_face_name = train_names[closest_face_index]
-    # closest_face = train[closest_face_index]
-
-    # # Plot closest face
-    # # Create a figure and axes for subplots
-    # fig, axes = plt.subplots(1, 2, figsize=(10, 5))
-
-    # # Plot closest face
-    # axes[0].imshow(closest_face.reshape(30, 30), cmap="gray")
-    # axes[0].set_title(closest_face_name)
-
-    # # Plot new face
-    # axes[1].imshow(new_face.reshape(30, 30), cmap="gray")
-    # axes[1].set_title(new_name)
-
-    # # Display the subplots
-    # plt.show()
-
-    # Plot comparison images
-
-
-    # Plot images
-    # plot_images(train, train_names, 2, 4, 24, 32)
-    # plot_images(images, names, 5, 5, 30, 55)
-
 
 if __name__ == "__main__":
     main()
