@@ -13,12 +13,7 @@ np.random.seed(341)
 
 ##################### Training data #####################
 
-x = pd.read_csv("components_train.csv")
-# convert to numpy
-X = x.drop("Name", axis=1)
-X = standardize(X)
-X = X.to_numpy()
-Y = np.array(x["Name"].values.tolist())
+X, Y = get_data("components_train.csv")
 
 
 # one hot encoding
@@ -55,7 +50,6 @@ layers = [Layer(n1, x), Layer(n2, n1), Layer(y, n2)]
 activations = [Tansig(), Tansig(), Softmax()]
 
 # Network parameters
-
 params = {
     "learning_rate": 1,
     "epochs": 100,
@@ -63,15 +57,12 @@ params = {
 }
 
 # Loss function
-
 loss = CrossEntropyLoss()
 
 # Instantiating the network
-
 nn = n_network(params, layers, activations, loss)
 
 # Training network
-
 nn.train(X, Y)
 evaluations = nn.evaluate(X, Y)
 

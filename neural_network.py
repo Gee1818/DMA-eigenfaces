@@ -15,13 +15,7 @@ np.random.seed(341)
 
 
 # input data
-
-x = pd.read_csv("components_train.csv")
-# convert to numpy
-X = x.drop("Name", axis=1)
-X = standardize(X)
-X = X.to_numpy()
-Y = np.array(x["Name"].values.tolist())
+X, Y = get_data("components_train.csv")
 
 # one hot encoding
 
@@ -148,12 +142,7 @@ print("Accuracy: {:.2%}".format(accuracy))
 
 
 # Compare with test dataset
-x_test = pd.read_csv("components_test.csv")
-
-X_test = x_test.drop("Name", axis=1)
-X_test = standardize(X_test)
-X_test = X_test.to_numpy()
-Y_test = np.array(x_test["Name"].values.tolist())
+X_test, Y_test = get_data("components_test.csv") # TODO: standardize test using train's mean and sd
 
 Y_test = one_hot_encode_test(Y_test, unique_values)
 

@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 
 
 # layer class
@@ -134,6 +135,18 @@ class CrossEntropyLoss:
         return - (y_true / (y_pred + epsilon)) / size
 
 
+
+def get_data(filename):
+    # Read file
+    df = pd.read_csv(filename)
+    # Get X and Y
+    X = df.drop("Name", axis=1)
+    Y = df["Name"].values.tolist()
+    # Standardize input
+    X = standardize(X)
+    # Convert to arrays
+    X, Y = X.to_numpy(), np.array(Y)
+    return X, Y
 
 def standardize(df):
 	normalized_df = (df - df.mean())/df.std()
