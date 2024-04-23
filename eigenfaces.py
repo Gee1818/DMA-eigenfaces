@@ -37,7 +37,12 @@ def main():
     
     # Calculate mean face
     mean_face = calculate_mean_face(train)  # array(900,)
-
+    
+    
+    # Save mean face
+    mean_face_df = pd.DataFrame(mean_face)
+    mean_face_df.to_csv("mean_face.csv", index=False, header= False)
+    
     # Plot mean face
     #plt.imshow(mean_face.reshape(30, 30), cmap="gray")
     #plt.show()
@@ -57,11 +62,17 @@ def main():
     #plot_images(np.real(eigenvectors.T), range(1, 21), 4, 5, 0, 20)
 
     # Calculate explained variance
+    
     #explained_variance = calculate_explained_variance(eigenvalues)  # array(900,)
     n_components = 60
-    ##print(explained_variance[:n_components])
+    
+    #print(explained_variance[:n_components])
     reduced_eigenvectors = eigenvectors[:, :n_components]  # matrix(900, n_components)
-
+    
+    # Save reduced eigenvectors to a csv
+    red_eig = pd.DataFrame(reduced_eigenvectors)
+    red_eig.to_csv("reduced_eigenvectors.csv", index=False, header= False)
+    
     # Project images into the reduced eigenface space
     reduced_eigenface_space = create_eigenface_space(
         reduced_eigenvectors, train_standarized
@@ -69,7 +80,7 @@ def main():
 
 
     
-     # Create two DataFrames (train + test) with the first 60 PCs of each image
+    # Create two DataFrames (train + test) with the first 60 PCs of each image
     for (tag, split, names) in [("train", train, train_names), ("test", test, test_names)]:
         centered_imgs = substract_mean_face(split, mean_face)
         eigenspace = create_eigenface_space(reduced_eigenvectors, centered_imgs)

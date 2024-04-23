@@ -90,7 +90,7 @@ def face_detection_test(input_path, output_path):
         else:
             print("saving face...\n")
             cv2.imwrite(os.path.join(output_path, file), face)
-            print("face saved in {output_path}".format(output_path=output_path))
+            #print("face saved in {output_path}".format(output_path=output_path))
         img_count += 1
     
 

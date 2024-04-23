@@ -11,6 +11,7 @@ from numpy.lib.type_check import real
 def read_images(path):
     images = []
     names = []
+    
     for image in os.listdir(path):
         img_dir = os.path.join(path, './'+image)
         img = cv2.imread(img_dir)
