@@ -24,7 +24,7 @@ def read_images(path):
 
 # Select training set
 def select_training_set(images, names, num_images):
-    unique_names = list(set(names))
+    unique_names = sorted(list(set(names)))
     dict_names = {}
     train_images, train_images_idx, train_names = [], [], []
     test_images, test_images_idx, test_names = [], [], []
