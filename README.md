@@ -1,10 +1,23 @@
 # DMA-eigenfaces
 
-A script to extract the faces from images inside a folder
+Estas son las librerías necesarias para correr todo:
 
-The folder where the images are must be modified to your path in the variable `path`
+* Análisis de datos: `numpy`, `pandas`, `matplotlib`
 
-The folder where the images will be saved must be modified to your path in the variable `output_path`
+* Procesamiento de imágenes: `opencv-python`, `pillow-heif`
 
-Necessary libraries cv2
-`pip install opencv-python`
+Este es el orden en el que hay que correr las cosas:
+
+`cd helper_scripts/`
+
+`python convert_heic.py`
+
+`python face_extraction.py`
+
+`python mirror_images.py`
+
+`cd ..`
+
+`python eigenfaces.py`
+
+`python neural_network.py`
