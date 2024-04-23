@@ -2,6 +2,9 @@ import os
 import cv2
 from time import time
 
+# Keep track of time
+start = time()
+
 # Load the cascade
 script_path = os.path.dirname(__file__) + "/"
 frontal_cascade_path = os.path.join(script_path, 'haarcascade_frontalface_alt.xml')
@@ -63,7 +66,9 @@ def face_extraction(input_path, output_path):
 
     success_msg = "Done! Processed {img_count} images in {secs:.0f} seconds."
     warning_msg = "Warning: no faces were detected in {fail_count} of the input images."
-    print(success_msg.format(img_count=img_count))
+    print(success_msg.format(img_count = img_count, secs = time() - start))
+    if fail_count > 0:
+    	print(warning_msg.format(fail_count = fail_count))
 
 def face_detection_test(input_path, output_path):
     
@@ -95,10 +100,6 @@ def face_detection_test(input_path, output_path):
     
 
 
-
-def main():
-    face_extraction("../3.nuestras_caras_raw/" , "../1.cropped_photos/")
-
 if __name__ == "__main__":
-    main()
+    face_extraction("../3.nuestras_caras_raw/" , "../1.cropped_photos/")
     
