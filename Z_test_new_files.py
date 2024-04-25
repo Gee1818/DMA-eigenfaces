@@ -1,3 +1,4 @@
+import json
 import sys
 
 sys.path.append("helper_scripts/")
@@ -41,24 +42,36 @@ projected_faces = np.reshape(
 
 ##################### Network Architecture #####################
 
-x = 60  # input features
-y = 19
-n1 = 12  # neurons in hidden layer 1
-n2 = 12  # neurons in hidden layer 2
+with open("5.nn_params/nn_params.json", "r") as json_file:
+    nn_architecture = json.load(json_file)
+
+print(nn_architecture)
+
+
+x = nn_architecture["x"]  # input features
+y = nn_architecture["y"]  # input features
+n1 = nn_architecture["n1"]  # neurons in hidden layer 1
+n2 = nn_architecture["n2"]  # neurons in hidden layer 2
 # n3 = 14  # neurons in hidden layer 3
 
 layers = [Layer(n1, x), Layer(n2, n1), Layer(y, n2)]
-activations = [Tansig(), Tansig(), Softmax()]
+activation_map = {
+    "Tansig": Tansig(),
+    "Logsig": Logsig(),
+    "Softmax": Softmax(),
+    "Purelin": Purelin(),
+}
+activations = []
+for activation in nn_architecture["activations"]:
+    activations.append(activation_map[activation])
+
 
 # Network parameters
-params = {
-    "learning_rate": 1,
-    "epochs": 100,
-    "target_error": 1e-4,
-}
+params = nn_architecture["params"]
 
 # Loss function
-loss = CrossEntropyLoss()
+loss_map = {"CrossEntropyLoss": CrossEntropyLoss()}
+loss = loss_map[nn_architecture["loss"]]
 
 # Instantiating the network
 nn = n_network(params, layers, activations, loss)

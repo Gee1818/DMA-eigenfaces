@@ -79,6 +79,7 @@ if save == "y":
     nn_params = {
         "x": x,
         "y": y,
+        "unique_values": unique_values.tolist(),
         "n1": n1,
         "n2": n2,
         "layers": [layer.__class__.__name__ for layer in layers],
