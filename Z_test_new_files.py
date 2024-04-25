@@ -1,15 +1,16 @@
 import json
 import sys
 
-sys.path.append("helper_scripts/")
-
 import numpy as np
 import pandas as pd
-from face_extraction import *
 
 from functions import *
 from functions_nn import *
+from helper_scripts.face_extraction import *
 from Z_clase_red import *
+
+# sys.path.append("helper_scripts/")
+
 
 test_raw_directory = "4.test_your_files/"
 test_processed_directory = "4.test_your_files/preprocessed_test_files/"
@@ -87,8 +88,8 @@ possible_predictions = nn_architecture["unique_values"]
 predictions = nn.predict(projected_faces)
 
 # Get names
-names = [possible_predictions[pred] for pred in predictions]
-
+predicted_names = [possible_predictions[pred] for pred in predictions]
+print(names)
 # Need to read to code to see if and where the filenames are stored
-# for i in range(len(names)):
-#     print(f"The file {filenames[i]} is {names[i]}")
+for i in range(len(names)):
+    print(f"The file {names[i]} is {predicted_names [i]}")
