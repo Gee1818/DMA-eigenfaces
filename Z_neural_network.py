@@ -1,5 +1,7 @@
 # library import
 
+import json
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -74,5 +76,18 @@ print(nn)
 save = input("Do you want to save the model? (y/n): ")
 if save == "y":
     nn.export_params()
+    nn_params = {
+        "x": x,
+        "y": y,
+        "n1": n1,
+        "n2": n2,
+        "layers": [layer.__class__.__name__ for layer in layers],
+        "activations": [activation.__class__.__name__ for activation in activations],
+        "params": params,
+        "loss": loss.__class__.__name__,
+    }
+
+    with open("5.nn_params/nn_params.json", "w") as file:
+        json.dump(nn_params, file)
 
 ##################### Testing data #####################
