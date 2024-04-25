@@ -15,6 +15,7 @@ class n_network:
         self.activations = activations  # list of activations per layer
         self.loss = loss_function  # CrossEntropyLoss class in functions_nn.py
         self.accuracy = 0
+        self.trained = False
 
     def train(self, X, Y):
         epoch = 0
@@ -63,7 +64,7 @@ class n_network:
         return activation
 
     def predict(self, X):
-        if not self.weights:
+        if self.trained:
             print("The model is not trained")
             return
         activations = [self.single_forward(x) for x in X]
@@ -94,4 +95,3 @@ class n_network:
             np.savetxt(f"5.nn_params/weights_{i}.csv", layer.weights, delimiter=",")
             np.savetxt(f"5.nn_params/biases_{i}.csv", layer.biases, delimiter=",")
         print("Parameters exported")
-

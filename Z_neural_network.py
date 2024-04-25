@@ -42,7 +42,7 @@ Y = np.reshape(Y, (Y.shape[0], Y.shape[1], 1))
 
 ##################### Network Architecture #####################
 
-x = 60  # input features
+x = X.shape[1]  # input features
 y = Y.shape[1]  # output features
 n1 = 12  # neurons in hidden layer 1
 n2 = 12  # neurons in hidden layer 2
@@ -76,4 +76,3 @@ if save == "y":
     nn.export_params()
 
 ##################### Testing data #####################
-

@@ -65,11 +65,11 @@ nn = n_network(params, layers, activations, loss)
 
 
 # Load trained weights
-for i in range(len(layers)):
-    nn.weights.append(
-        pd.read_csv(f"5.nn_params/weights_{i}.csv", header=None).to_numpy()
-    )
-    nn.biases.append(pd.read_csv(f"5.nn_params/biases_{i}.csv", header=None).to_numpy())
+for i, layer in enumerate(nn.layers):
+    print(f"i: {i}")
+    layer.weights = pd.read_csv(f"5.nn_params/weights_{i}.csv", header=None).to_numpy()
+    layer.biases = pd.read_csv(f"5.nn_params/biases_{i}.csv", header=None).to_numpy()
+
 
 # Predict
-nn.predict(projected_faces)
+print(nn.predict(projected_faces))

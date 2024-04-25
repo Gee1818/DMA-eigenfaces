@@ -5,6 +5,8 @@ import pandas as pd
 # layer class
 class Layer:
     def __init__(self, n_neurons, n_input):
+        self.n_neurons = n_neurons
+        self.n_input = n_input
         self.weights = np.random.uniform(
             -0.5, 0.5, size=(n_neurons, n_input)
         )  # random weights
@@ -65,7 +67,7 @@ class Tansig:
 
     def forward(self, x):
         self.output = np.tanh(x)
-        #self.output = 2 / (1 + np.exp(-2 * x)) - 1
+        # self.output = 2 / (1 + np.exp(-2 * x)) - 1
         return self.output
 
     def backward(self, output_gradient, learning_rate):
@@ -110,15 +112,18 @@ def MSE_loss_prime(y_true, y_pred):
 
 def cross_loss(y_true, y_pred):
     limit = 1e-10
-    y_pred = np.clip(y_pred, limit, 1 - limit) # prevents y_pred=0 since log(0) is undefined
+    y_pred = np.clip(
+        y_pred, limit, 1 - limit
+    )  # prevents y_pred=0 since log(0) is undefined
     losses = -np.sum(y_true * np.log(y_pred), axis=0)
     return np.mean(losses)
 
 
 def cross_loss_prime(y_true, y_pred):
     size = y_true.shape[0]
-    #return (y_pred - y_true) / size
-    return - (y_true / y_pred) / size
+    # return (y_pred - y_true) / size
+    return -(y_true / y_pred) / size
+
 
 class CrossEntropyLoss:
     def __init__(self):
@@ -132,8 +137,7 @@ class CrossEntropyLoss:
     def prime(self, y_true, y_pred):
         epsilon = 1e-10
         size = y_true.shape[0]
-        return - (y_true / (y_pred + epsilon)) / size
-
+        return -(y_true / (y_pred + epsilon)) / size
 
 
 def get_data(filename):
@@ -148,6 +152,7 @@ def get_data(filename):
     X, Y = X.to_numpy(), np.array(Y)
     return X, Y
 
+
 def standardize(df):
-	normalized_df = (df - df.mean())/df.std()
-	return normalized_df
+    normalized_df = (df - df.mean()) / df.std()
+    return normalized_df
