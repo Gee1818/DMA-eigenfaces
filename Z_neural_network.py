@@ -18,12 +18,14 @@ X, Y = get_data("components_train.csv")
 
 # one hot encoding
 
+
 def one_hot_encode(array):
     unique = np.unique(array)
     df = pd.DataFrame(0, columns=unique, index=range(len(array)))
     for index, label in enumerate(array):
         df.loc[index, label] = 1
     return df.to_numpy(), unique
+
 
 def one_hot_encode_test(array, unique_train):
     df = pd.DataFrame(0, columns=unique_train, index=range(len(array)))
@@ -44,7 +46,7 @@ x = 60  # input features
 y = Y.shape[1]  # output features
 n1 = 12  # neurons in hidden layer 1
 n2 = 12  # neurons in hidden layer 2
-#n3 = 14  # neurons in hidden layer 3
+# n3 = 14  # neurons in hidden layer 3
 
 layers = [Layer(n1, x), Layer(n2, n1), Layer(y, n2)]
 activations = [Tansig(), Tansig(), Softmax()]
@@ -68,6 +70,10 @@ evaluations = nn.evaluate(X, Y)
 
 print(nn)
 
-
+# Save the model
+save = input("Do you want to save the model? (y/n): ")
+if save == "y":
+    nn.export_params()
 
 ##################### Testing data #####################
+
