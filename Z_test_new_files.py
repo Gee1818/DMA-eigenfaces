@@ -45,8 +45,6 @@ projected_faces = np.reshape(
 with open("5.nn_params/nn_params.json", "r") as json_file:
     nn_architecture = json.load(json_file)
 
-print(nn_architecture)
-
 
 x = nn_architecture["x"]  # input features
 y = nn_architecture["y"]  # input features
@@ -85,4 +83,12 @@ for i, layer in enumerate(nn.layers):
 
 
 # Predict
-print(nn.predict(projected_faces))
+possible_predictions = nn_architecture["unique_values"]
+predictions = nn.predict(projected_faces)
+
+# Get names
+names = [possible_predictions[pred] for pred in predictions]
+
+# Need to read to code to see if and where the filenames are stored
+# for i in range(len(names)):
+#     print(f"The file {filenames[i]} is {names[i]}")
