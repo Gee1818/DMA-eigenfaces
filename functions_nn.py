@@ -152,7 +152,27 @@ def get_data(filename):
     X, Y = X.to_numpy(), np.array(Y)
     return X, Y
 
+    
+def get_data_test(filename, df_train):
+    # Read file
+    df = pd.read_csv(filename)
+    # Get X and Y
+    X = df.drop("Name", axis=1)
+    Y = df["Name"].values.tolist()
+    # Standardize input
+    X = standardize_test(X, df_train)
+    # Convert to arrays
+    X, Y = X.to_numpy(), np.array(Y)
+    return X, Y
+
 
 def standardize(df):
     normalized_df = (df - df.mean()) / df.std()
     return normalized_df
+    
+def standardize_test(df_test, df_train):
+	df_train = df_train.drop("Name", axis=1)
+	mean = np.array(df_train.mean())
+	std = np.array(df_train.std())
+	normalized_df = (df_test - mean) / std
+	return normalized_df

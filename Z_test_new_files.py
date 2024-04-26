@@ -34,7 +34,8 @@ images_centered = substract_mean_face(images, mean_face)
 projected_faces = create_eigenface_space(eigenvectors, images_centered)
 
 # standardize projected faces
-projected_faces = standardize(projected_faces)
+df_train = pd.read_csv("components_train.csv")
+projected_faces = standardize_test(projected_faces, df_train)
 
 # reshape
 projected_faces = np.reshape(
@@ -47,11 +48,10 @@ with open("5.nn_params/nn_params.json", "r") as json_file:
     nn_architecture = json.load(json_file)
 
 
-x = nn_architecture["x"]  # input features
-y = nn_architecture["y"]  # input features
+x = nn_architecture["x"]    # number of input features
+y = nn_architecture["y"]    # number of outputs
 n1 = nn_architecture["n1"]  # neurons in hidden layer 1
 n2 = nn_architecture["n2"]  # neurons in hidden layer 2
-# n3 = 14  # neurons in hidden layer 3
 
 layers = [Layer(n1, x), Layer(n2, n1), Layer(y, n2)]
 activation_map = {
@@ -75,13 +75,8 @@ loss = loss_map[nn_architecture["loss"]]
 # Instantiating the network
 nn = n_network(params, layers, activations, loss)
 
-
 # Load trained weights
-for i, layer in enumerate(nn.layers):
-    print(f"i: {i}")
-    layer.weights = pd.read_csv(f"5.nn_params/weights_{i}.csv", header=None).to_numpy()
-    layer.biases = pd.read_csv(f"5.nn_params/biases_{i}.csv", header=None).to_numpy()
-
+nn.load_params()
 
 # Predict
 possible_predictions = nn_architecture["unique_values"]
@@ -89,7 +84,7 @@ predictions = nn.predict(projected_faces)
 
 # Get names
 predicted_names = [possible_predictions[pred] for pred in predictions]
-print(names)
+#print(names)
 # Need to read to code to see if and where the filenames are stored
 for i in range(len(names)):
     print(f"The file {names[i]} is {predicted_names [i]}")

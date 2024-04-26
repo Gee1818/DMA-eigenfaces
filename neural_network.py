@@ -142,7 +142,8 @@ print("Accuracy: {:.2%}".format(accuracy))
 
 
 # Compare with test dataset
-X_test, Y_test = get_data("components_test.csv") # TODO: standardize test using train's mean and sd
+df_train = pd.read_csv("components_train.csv")
+X_test, Y_test = get_data_test("components_test.csv", df_train)
 
 Y_test = one_hot_encode_test(Y_test, unique_values)
 

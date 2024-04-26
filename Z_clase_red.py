@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 
 # disable scientific notation
 np.set_printoptions(suppress=True, precision=2)
@@ -48,7 +49,7 @@ class n_network:
 
             # print epoch error
             if epoch % 20 == 0:
-                print(f"Epoch {epoch} Error {error}")
+                print(f"Epoch: {epoch} - Error: {error}")
 
             # adaptive learning rate
             if epoch % 4000 == 0:
@@ -81,6 +82,11 @@ class n_network:
     def save_params(self):
         self.weights += [layer.weights for layer in self.layers]
         self.biases += [layer.biases for layer in self.layers]
+        
+    def load_params(self):
+    	for i, layer in enumerate(self.layers):
+    		layer.weights = pd.read_csv(f"5.nn_params/weights_{i}.csv", header=None).to_numpy()
+    		layer.biases = pd.read_csv(f"5.nn_params/biases_{i}.csv", header=None).to_numpy()
 
     def __str__(self) -> str:
         result = f"Neural Network with {len(self.layers)} layers:\n"
