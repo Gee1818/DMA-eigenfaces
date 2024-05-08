@@ -46,7 +46,7 @@ class n_network:
 
             # Save parameters
             self.save_params()
-
+            
             # print epoch error
             if epoch % 20 == 0:
                 print(f"Epoch: {epoch} - Error: {error}")
@@ -54,6 +54,8 @@ class n_network:
             # adaptive learning rate
             if epoch % 4000 == 0:
                 self.learning_rate /= 10
+        # Update trained flag
+        self.trained = True
 
     def single_forward(self, x):  # Forward pass of a single observation
         # input
@@ -65,7 +67,7 @@ class n_network:
         return activation
 
     def predict(self, X):
-        if self.trained:
+        if not self.trained:
             print("The model is not trained")
             return
         activations = [self.single_forward(x) for x in X]
@@ -85,8 +87,8 @@ class n_network:
         
     def load_params(self):
     	for i, layer in enumerate(self.layers):
-    		layer.weights = pd.read_csv(f"5.nn_params/weights_{i}.csv", header=None).to_numpy()
-    		layer.biases = pd.read_csv(f"5.nn_params/biases_{i}.csv", header=None).to_numpy()
+            layer.weights = pd.read_csv(f"5.nn_params/weights_{i}.csv", header=None).to_numpy()
+            layer.biases = pd.read_csv(f"5.nn_params/biases_{i}.csv", header=None).to_numpy()
 
     def __str__(self) -> str:
         result = f"Neural Network with {len(self.layers)} layers:\n"

@@ -66,13 +66,34 @@ loss = CrossEntropyLoss()
 # Instantiating the network
 nn = n_network(params, layers, activations, loss)
 
-# Training network
+
+##################### Training network #####################
+
 nn.train(X, Y)
+
 evaluations = nn.evaluate(X, Y)
 
-print(nn)
+print(f"Training accuracy: {evaluations}")
 
-# Save the model
+
+##################### Testing data #####################
+
+df_train = pd.read_csv("components_train.csv")
+X_test, Y_test = get_data_test("components_test.csv", df_train)
+
+Y_test = one_hot_encode_test(Y_test, unique_values)
+
+X_test = np.reshape(X_test, (X_test.shape[0], X_test.shape[1], 1))
+Y_test = np.reshape(Y_test, (Y_test.shape[0], Y_test.shape[1], 1))
+
+evaluations_t = nn.evaluate(X_test, Y_test)
+
+print(f"Test accuracy: {evaluations_t}")
+
+
+
+##################### Save the model #####################
+
 save = input("Do you want to save the model? (y/n): ")
 if save == "y":
     nn.export_params()
@@ -91,4 +112,4 @@ if save == "y":
     with open("5.nn_params/nn_params.json", "w") as file:
         json.dump(nn_params, file)
 
-##################### Testing data #####################
+    print("Model saved")

@@ -1,5 +1,4 @@
 import json
-import sys
 
 import numpy as np
 import pandas as pd
@@ -22,8 +21,10 @@ images, names = read_images(test_processed_directory)
 
 # Load train eigenvectors and mean face
 eigenvectors = pd.read_csv(
-    "reduced_eigenvectors.csv", header=None, dtype=float
-).to_numpy()
+    "reduced_eigenvectors.csv",
+    header=None,
+    dtype=float).to_numpy()
+
 mean_face = pd.read_csv("mean_face.csv", header=None).to_numpy().flatten()
 
 # substract mean face
@@ -54,13 +55,16 @@ n1 = nn_architecture["n1"]  # neurons in hidden layer 1
 n2 = nn_architecture["n2"]  # neurons in hidden layer 2
 
 layers = [Layer(n1, x), Layer(n2, n1), Layer(y, n2)]
+
 activation_map = {
     "Tansig": Tansig(),
     "Logsig": Logsig(),
     "Softmax": Softmax(),
     "Purelin": Purelin(),
 }
+
 activations = []
+
 for activation in nn_architecture["activations"]:
     activations.append(activation_map[activation])
 
