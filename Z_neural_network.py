@@ -68,15 +68,22 @@ nn = n_network(params, layers, activations, loss)
 
 
 ##################### Training network #####################
+print("Training network...\n")
+
 
 nn.train(X, Y)
+predictions = nn.predict(X)
 
-evaluations = nn.evaluate(X, Y)
+print("\n")
+print(f"Training accuracy: {nn.evaluate(X, Y)}")
 
-print(f"Training accuracy: {evaluations}")
+print(predictions)
+print(unique_values)
 
 
 ##################### Testing data #####################
+print("\n")
+print("Testing network...")
 
 df_train = pd.read_csv("components_train.csv")
 X_test, Y_test = get_data_test("components_test.csv", df_train)

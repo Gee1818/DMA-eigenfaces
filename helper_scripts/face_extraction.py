@@ -91,7 +91,7 @@ def face_detection_test(input_path, output_path):
         face = get_face(current_dir)
             
         if face is None:
-            print("No face detected in {file}".format(file=file))
+            print("No face detected in {file}\n".format(file=file))
         else:
             print("saving face...\n")
             cv2.imwrite(os.path.join(output_path, file), face)

@@ -4,6 +4,7 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 import random
+import re
 from numpy.lib.type_check import real
 
 
@@ -171,3 +172,15 @@ def evaluate_test(
         print(
             f"Real name: {results_test_name[i]}, Predicted name: {results_predicted_name[i]}"
         )
+
+
+# Remove imaginary part (as strings) from eigenvectors when reading as .csv
+# Used in Z_test_new_files.py
+
+def remove_img(value):
+    if isinstance(value, str):
+        return re.sub(r'\+0j', '', value)
+    else:
+        return value
+    
+    

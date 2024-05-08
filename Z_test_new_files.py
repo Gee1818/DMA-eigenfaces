@@ -8,7 +8,6 @@ from functions_nn import *
 from helper_scripts.face_extraction import *
 from Z_clase_red import *
 
-# sys.path.append("helper_scripts/")
 
 
 test_raw_directory = "4.test_your_files/"
@@ -22,8 +21,13 @@ images, names = read_images(test_processed_directory)
 # Load train eigenvectors and mean face
 eigenvectors = pd.read_csv(
     "reduced_eigenvectors.csv",
-    header=None,
-    dtype=float).to_numpy()
+    header=None )
+
+# Remove imaginary part (as strings) from eigenvectors.
+eigenvectors = eigenvectors.map(lambda x: re.sub(r'\(|\)|\+0j', '', x) if isinstance(x, str) else x)
+
+# Convert to numpy array
+eigenvectors = eigenvectors.astype(float).to_numpy()
 
 mean_face = pd.read_csv("mean_face.csv", header=None).to_numpy().flatten()
 
@@ -88,7 +92,11 @@ predictions = nn.predict(projected_faces)
 
 # Get names
 predicted_names = [possible_predictions[pred] for pred in predictions]
-#print(names)
+print(predictions)
+
 # Need to read to code to see if and where the filenames are stored
 for i in range(len(names)):
     print(f"The file {names[i]} is {predicted_names [i]}")
+
+
+

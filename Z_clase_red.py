@@ -89,17 +89,18 @@ class n_network:
     	for i, layer in enumerate(self.layers):
             layer.weights = pd.read_csv(f"5.nn_params/weights_{i}.csv", header=None).to_numpy()
             layer.biases = pd.read_csv(f"5.nn_params/biases_{i}.csv", header=None).to_numpy()
+            self.trained = True
 
     def __str__(self) -> str:
-        result = f"Neural Network with {len(self.layers)} layers:\n"
-        for i, layer in enumerate(self.layers):
-            result += f"Layer {i+1}:\n"
-            result += f"Weights: {layer.weights}\n"
-            result += f"Biases: {layer.biases}\n"
-        return result
+            result = f"Neural Network with {len(self.layers)} layers:\n"
+            for i, layer in enumerate(self.layers):
+                result += f"Layer {i+1}:\n"
+                result += f"Weights: {layer.weights}\n"
+                result += f"Biases: {layer.biases}\n"
+            return result
 
     def export_params(self):
-        for i, layer in enumerate(self.layers):
-            np.savetxt(f"5.nn_params/weights_{i}.csv", layer.weights, delimiter=",")
-            np.savetxt(f"5.nn_params/biases_{i}.csv", layer.biases, delimiter=",")
-        print("Parameters exported")
+            for i, layer in enumerate(self.layers):
+                np.savetxt(f"5.nn_params/weights_{i}.csv", layer.weights, delimiter=",")
+                np.savetxt(f"5.nn_params/biases_{i}.csv", layer.biases, delimiter=",")
+            print("Parameters exported")
