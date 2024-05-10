@@ -8,7 +8,7 @@ from functions import *
 # Define path for input images
 path_og = "1.cropped_photos/"
 path_mirrored = "2.mirrored_images/"
-number_of_images_train = 35
+number_of_images_train = 45
 
 
 def main():
