@@ -55,8 +55,8 @@ activations = [Tansig(), Tansig(), Softmax()]
 
 # Network parameters
 params = {
-    "learning_rate": 1,
-    "epochs": 100,
+    "learning_rate": 0.1,
+    "epochs": 50,
     "target_error": 1e-4,
 }
 
@@ -77,8 +77,8 @@ predictions = nn.predict(X)
 print("\n")
 print(f"Training accuracy: {nn.evaluate(X, Y)}")
 
-print(predictions)
-print(unique_values)
+# print(predictions)
+# print(unique_values)
 
 
 ##################### Testing data #####################

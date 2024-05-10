@@ -8,7 +8,7 @@ from functions import *
 # Define path for input images
 path_og = "1.cropped_photos/"
 path_mirrored = "2.mirrored_images/"
-number_of_images_train = 10
+number_of_images_train = 35
 
 
 def main():
@@ -24,6 +24,38 @@ def main():
 
     images = np.concatenate((images, images_mirrored), axis=0)
     names = names + names_mirrored
+
+    # Add shifted images
+    shifted_images = []
+    for image in range(images.shape[0]):
+        # Reshape the array into a 30x30 matrix
+        image_matrix = images[image].reshape(30, 30)
+
+        # Shift 2 pixels
+        shifted_image_right = np.roll(image_matrix, 2, axis=1)
+        shifted_image_left = np.roll(image_matrix, -2, axis=1)
+
+        # Flatten the matrix back into a 1D array
+        shifted_images.append(shifted_image_right.flatten())
+        shifted_images.append(shifted_image_left.flatten())
+
+        # Shift 1 pixels
+        shifted_image_right = np.roll(image_matrix, 1, axis=1)
+        shifted_image_left = np.roll(image_matrix, -1, axis=1)
+
+        # Flatten the matrix back into a 1D array
+        shifted_images.append(shifted_image_right.flatten())
+        shifted_images.append(shifted_image_left.flatten())
+        # Append the names
+        names.append(names[image])
+        names.append(names[image])
+        names.append(names[image])
+        names.append(names[image])
+    shifted_images_array = np.array(shifted_images)
+
+
+    images = np.concatenate((images, shifted_images_array), axis=0)
+    print(len(names))
 
     print(images.shape)
 
@@ -93,61 +125,61 @@ def main():
 
     # Add a function to find the closest face to every face in the test set
 
-    print("\n")
-    print("Calculando las caras mas cercanas..")
-    print(f"Comparing {train_df.shape[0]} vectors with each other..")
+    # print("\n")
+    # print("Calculando las caras mas cercanas..")
+    # print(f"Comparing {train_df.shape[0]} vectors with each other..")
 
-    # Distances between vectors
-    distances = np.array(train_df.shape[0] * [train_df.shape[0] * [float("nan")]])
+    # # Distances between vectors
+    # distances = np.array(train_df.shape[0] * [train_df.shape[0] * [float("nan")]])
 
-    for i in range(train_df.shape[0]):
-        for j in range(train_df.shape[0]):
+    # for i in range(train_df.shape[0]):
+    #     for j in range(train_df.shape[0]):
 
-            if (
-                i // number_of_images_train == j // number_of_images_train
-            ):  # if vectors belong to the same person...
-                continue  # ...skip
+    #         if (
+    #             i // number_of_images_train == j // number_of_images_train
+    #         ):  # if vectors belong to the same person...
+    #             continue  # ...skip
 
-            # Calculate distance between ith and jth vector
-            dist = np.linalg.norm(train_df.iloc[i, 1:] - train_df.iloc[j, 1:])
+    #         # Calculate distance between ith and jth vector
+    #         dist = np.linalg.norm(train_df.iloc[i, 1:] - train_df.iloc[j, 1:])
 
-            # Add to matrix
-            distances[i][j] = dist
-            distances[j][i] = dist
+    #         # Add to matrix
+    #         distances[i][j] = dist
+    #         distances[j][i] = dist
 
+    # # index_max_dist = np.unravel_index(np.nanargmax(distances), distances.shape)
+
+    # # Closest faces
+    # index_min_dist = np.unravel_index(np.nanargmin(distances), distances.shape)
+    # comb_min_dis = [train_names[index_min_dist[0]], train_names[index_min_dist[1]]]
+    # print("Min distance:", distances[index_min_dist])
+    # print("Closest faces are:", comb_min_dis)
+
+    # # Print the closest faces
+    # # Get the faces matrix
+    # distant_faces = np.column_stack(
+    #     (images[train_idx[index_min_dist[0]]], images[train_idx[index_min_dist[1]]])
+    # )
+    # # Get the names:
+    # names = [train_names[index_min_dist[0]], train_names[index_min_dist[1]]]
+    # # Plot:
+    # plot_images(np.real(distant_faces.T), [names[0], names[1]], 1, 2, 0, 2)
+
+    # # Most distant faces
     # index_max_dist = np.unravel_index(np.nanargmax(distances), distances.shape)
+    # comb_max_dis = [train_names[index_max_dist[0]], train_names[index_max_dist[1]]]
+    # print("Max distance:", distances[index_max_dist])
+    # print("Most distant faces are:", comb_max_dis)
 
-    # Closest faces
-    index_min_dist = np.unravel_index(np.nanargmin(distances), distances.shape)
-    comb_min_dis = [train_names[index_min_dist[0]], train_names[index_min_dist[1]]]
-    print("Min distance:", distances[index_min_dist])
-    print("Closest faces are:", comb_min_dis)
-
-    # Print the closest faces
-    # Get the faces matrix
-    distant_faces = np.column_stack(
-        (images[train_idx[index_min_dist[0]]], images[train_idx[index_min_dist[1]]])
-    )
-    # Get the names:
-    names = [train_names[index_min_dist[0]], train_names[index_min_dist[1]]]
-    # Plot:
-    plot_images(np.real(distant_faces.T), [names[0], names[1]], 1, 2, 0, 2)
-
-    # Most distant faces
-    index_max_dist = np.unravel_index(np.nanargmax(distances), distances.shape)
-    comb_max_dis = [train_names[index_max_dist[0]], train_names[index_max_dist[1]]]
-    print("Max distance:", distances[index_max_dist])
-    print("Most distant faces are:", comb_max_dis)
-
-    # Print the most distant faces
-    # Get the faces matrix
-    distant_faces = np.column_stack(
-        (images[train_idx[index_max_dist[0]]], images[train_idx[index_max_dist[1]]])
-    )
-    # Get the names:
-    names = [train_names[index_max_dist[0]], train_names[index_max_dist[1]]]
-    # Plot:
-    plot_images(np.real(distant_faces.T), [names[0], names[1]], 1, 2, 0, 2)
+    # # Print the most distant faces
+    # # Get the faces matrix
+    # distant_faces = np.column_stack(
+    #     (images[train_idx[index_max_dist[0]]], images[train_idx[index_max_dist[1]]])
+    # )
+    # # Get the names:
+    # names = [train_names[index_max_dist[0]], train_names[index_max_dist[1]]]
+    # # Plot:
+    # plot_images(np.real(distant_faces.T), [names[0], names[1]], 1, 2, 0, 2)
 
 
 if __name__ == "__main__":
