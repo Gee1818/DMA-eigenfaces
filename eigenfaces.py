@@ -8,7 +8,8 @@ from functions import *
 # Define path for input images
 path_og = "1.cropped_photos/"
 path_mirrored = "2.mirrored_images/"
-number_of_images_train = 45
+path_brightness = "6.brightness/"
+number_of_images_train = 64
 
 
 def main():
@@ -22,8 +23,12 @@ def main():
         path_mirrored
     )  # Images matrix -->(num_images, 900), names -->list
 
-    images = np.concatenate((images, images_mirrored), axis=0)
-    names = names + names_mirrored
+    images_brightness, names_brightness = read_images(
+        path_brightness
+    )  # Images matrix -->(num_images, 900), names -->list
+
+    images = np.concatenate((images, images_mirrored, images_brightness), axis=0)
+    names = names + names_mirrored + names_brightness
 
     # Add shifted images
     shifted_images = []

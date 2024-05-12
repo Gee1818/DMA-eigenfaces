@@ -16,6 +16,8 @@ Este es el orden en el que hay que correr las cosas:
 
 `python mirror_images.py`
 
+`python brightness.py`
+
 `cd ..`
 
 `python eigenfaces.py`
