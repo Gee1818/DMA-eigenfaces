@@ -17,6 +17,8 @@ def change_brightness(path_in, path_out):
             brighter_image = increase_brightness(image, value = 30)
             darker_image   = decrease_brightness(image, value = 30)
             
+            brighter_image2 = increase_brightness(image, value = 15)
+            darker_image2   = decrease_brightness(image, value = 15)
             # Generate the save path for the mirrored image
             save_path = os.path.join(path_out, filename)
             
@@ -24,6 +26,8 @@ def change_brightness(path_in, path_out):
             #os.makedirs(path_out, exist_ok=True) #comentar si genera algun error
             cv2.imwrite(os.path.join(path_out, filename.split(".")[0] + "b" + ".jpg"), brighter_image)
             cv2.imwrite(os.path.join(path_out, filename.split(".")[0] + "d" + ".jpg"), darker_image)
+            cv2.imwrite(os.path.join(path_out, filename.split(".")[0] + "b2" + ".jpg"), brighter_image2)
+            cv2.imwrite(os.path.join(path_out, filename.split(".")[0] + "d2" + ".jpg"), darker_image2)
             
 def increase_brightness(img, value=30):
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
