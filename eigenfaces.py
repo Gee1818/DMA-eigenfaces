@@ -9,7 +9,7 @@ from functions import *
 path_og = "1.cropped_photos/"
 path_mirrored = "2.mirrored_images/"
 path_brightness = "6.brightness/"
-number_of_images_train = 64
+number_of_images_train = 194
 
 
 def main():
@@ -19,16 +19,16 @@ def main():
         path_og
     )  # Images matrix -->(num_images, 900), names -->list
 
-    images_mirrored, names_mirrored = read_images(
-        path_mirrored
-    )  # Images matrix -->(num_images, 900), names -->list
+    # images_mirrored, names_mirrored = read_images(
+        # path_mirrored
+    # )  # Images matrix -->(num_images, 900), names -->list
 
     images_brightness, names_brightness = read_images(
         path_brightness
     )  # Images matrix -->(num_images, 900), names -->list
 
-    images = np.concatenate((images, images_mirrored, images_brightness), axis=0)
-    names = names + names_mirrored + names_brightness
+    images = np.concatenate((images, images_brightness), axis=0)
+    names = names + names_brightness
 
     # Add shifted images
     shifted_images = []
@@ -99,7 +99,7 @@ def main():
     # Calculate explained variance
 
     # explained_variance = calculate_explained_variance(eigenvalues)  # array(900,)
-    n_components = 60
+    n_components = 35
 
     # print(explained_variance[:n_components])
     reduced_eigenvectors = eigenvectors[:, :n_components]  # matrix(900, n_components)
