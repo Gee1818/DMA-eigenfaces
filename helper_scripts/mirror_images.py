@@ -5,7 +5,7 @@ from time import time
 
 def mirror_images(path_in, path_out):
     # Iterate over all files in the source directory
-    for filename in os.listdir(path_in):
+    for filename in sorted(os.listdir(path_in)):
         # Check if the file is an image
         if filename.endswith(('.png', '.jpg', '.jpeg')):
             # Open the image
@@ -19,7 +19,7 @@ def mirror_images(path_in, path_out):
             save_path = os.path.join(path_out, filename)
             
             # Save the mirrored image
-            #os.makedirs(path_out, exist_ok=True) #comentar si genera algun error
+            os.makedirs(path_out, exist_ok=True) #comentar si genera algun error
             mirrored_image.save(save_path)
             
 

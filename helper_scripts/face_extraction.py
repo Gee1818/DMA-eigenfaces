@@ -44,13 +44,13 @@ def face_extraction(input_path, output_path):
     img_count = 0
     fail_count = 0
 
-    names = [dir for dir in os.listdir(input_path)]
+    names = sorted(os.listdir(input_path))
 
     for person in names:
         current_dir = os.path.join(input_path, person)
         print("Processing {person}'s pictures...".format(person=person))
         person_count = 0
-        for file in os.listdir(current_dir):
+        for file in sorted(os.listdir(current_dir)):
             if file[-4:] == "HEIC":
                 continue
             img_count += 1
@@ -77,7 +77,7 @@ def face_detection_test(input_path, output_path):
     files = [file for file in os.listdir(input_path) if os.path.isfile(os.path.join(input_path, file))]
     
     
-    for file in files:
+    for file in sorted(files):
         
         print(f"Processing {file}...")
         

@@ -6,7 +6,7 @@ from time import time
 
 def change_brightness(path_in, path_out):
     # Iterate over all files in the source directory
-    for filename in os.listdir(path_in):
+    for filename in sorted(os.listdir(path_in)):
         # Check if the file is an image
         if filename.endswith(('.png', '.jpg', '.jpeg')):
             # Open the image
@@ -23,7 +23,7 @@ def change_brightness(path_in, path_out):
             save_path = os.path.join(path_out, filename)
             
             # Save the mirrored image
-            #os.makedirs(path_out, exist_ok=True) #comentar si genera algun error
+            os.makedirs(path_out, exist_ok=True) #comentar si genera algun error
             cv2.imwrite(os.path.join(path_out, filename.split(".")[0] + "b" + ".jpg"), brighter_image)
             cv2.imwrite(os.path.join(path_out, filename.split(".")[0] + "d" + ".jpg"), darker_image)
             cv2.imwrite(os.path.join(path_out, filename.split(".")[0] + "b2" + ".jpg"), brighter_image2)

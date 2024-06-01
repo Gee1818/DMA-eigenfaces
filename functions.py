@@ -13,7 +13,7 @@ def read_images(path):
     images = []
     names = []
     
-    for image in os.listdir(path):
+    for image in sorted(os.listdir(path)):
         img_dir = os.path.join(path, './'+image)
         img = cv2.imread(img_dir)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)

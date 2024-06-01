@@ -10,7 +10,7 @@ start = time()
 # Get list of HEIF and HEIC files in directory
 directory = "../3.nuestras_caras_raw/"
 
-names = [dir for dir in os.listdir(directory)]
+names = sorted(os.listdir(directory))
 
 # Counter: number of images with HEIC extension
 img_count = 0
@@ -21,7 +21,7 @@ print("Processing...")
 for person in names:
     currentdir = directory + person + "/"
     # ...and for each picture of said person...
-    for file in os.listdir(currentdir):
+    for file in sorted(os.listdir(currentdir)):
         # ...if picture has HEIC extension...
         if file.lower().endswith(".heic"):
             # ...convert to JPEG and save it as such
