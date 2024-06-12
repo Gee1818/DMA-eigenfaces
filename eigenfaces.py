@@ -9,7 +9,9 @@ from functions import *
 path_og = "1.cropped_photos/"
 path_mirrored = "2.mirrored_images/"
 path_brightness = "6.brightness/"
-number_of_images_train = 194
+
+number_of_images_train = 10 # per person
+n_components = 20
 
 
 def main():
@@ -23,51 +25,45 @@ def main():
         # path_mirrored
     # )  # Images matrix -->(num_images, 900), names -->list
 
-    images_brightness, names_brightness = read_images(
-        path_brightness
-    )  # Images matrix -->(num_images, 900), names -->list
+    #images_brightness, names_brightness = read_images(path_brightness)
 
-    images = np.concatenate((images, images_brightness), axis=0)
-    names = names + names_brightness
+    #images = np.concatenate((images, images_brightness), axis=0)
+    #names = names + names_brightness
 
     # Add shifted images
-    shifted_images = []
-    for image in range(images.shape[0]):
+    #shifted_images = []
+    #for image in range(images.shape[0]):
         # Reshape the array into a 30x30 matrix
-        image_matrix = images[image].reshape(30, 30)
+        #image_matrix = images[image].reshape(30, 30)
 
         # Shift 2 pixels
-        shifted_image_right = np.roll(image_matrix, 2, axis=1)
-        shifted_image_left = np.roll(image_matrix, -2, axis=1)
+        #shifted_image_right = np.roll(image_matrix, 2, axis=1)
+        #shifted_image_left = np.roll(image_matrix, -2, axis=1)
 
         # Flatten the matrix back into a 1D array
-        shifted_images.append(shifted_image_right.flatten())
-        shifted_images.append(shifted_image_left.flatten())
+        #shifted_images.append(shifted_image_right.flatten())
+        #shifted_images.append(shifted_image_left.flatten())
 
         # Shift 1 pixels
-        shifted_image_right = np.roll(image_matrix, 1, axis=1)
-        shifted_image_left = np.roll(image_matrix, -1, axis=1)
+        #shifted_image_right = np.roll(image_matrix, 1, axis=1)
+        #shifted_image_left = np.roll(image_matrix, -1, axis=1)
 
         # Flatten the matrix back into a 1D array
-        shifted_images.append(shifted_image_right.flatten())
-        shifted_images.append(shifted_image_left.flatten())
+        #shifted_images.append(shifted_image_right.flatten())
+        #shifted_images.append(shifted_image_left.flatten())
         # Append the names
-        names.append(names[image])
-        names.append(names[image])
-        names.append(names[image])
-        names.append(names[image])
-    shifted_images_array = np.array(shifted_images)
+        #for i in range(4):
+            #names.append(names[image])
+    #shifted_images_array = np.array(shifted_images)
+    #images = np.concatenate((images, shifted_images_array), axis=0)
 
-
-    images = np.concatenate((images, shifted_images_array), axis=0)
-    print(len(names))
-
-    print(images.shape)
 
     # Select training set
     train, test, train_idx, test_idx, train_names, test_names = select_training_set(
         images, names, number_of_images_train
     )  # train --> matrix(num_images*names, 900)
+
+    train, train_names = augment_training_set(train, train_names)
 
     # Calculate mean face
     mean_face = calculate_mean_face(train)  # array(900,)
@@ -99,7 +95,6 @@ def main():
     # Calculate explained variance
 
     # explained_variance = calculate_explained_variance(eigenvalues)  # array(900,)
-    n_components = 35
 
     # print(explained_variance[:n_components])
     reduced_eigenvectors = eigenvectors[:, :n_components]  # matrix(900, n_components)

@@ -1,11 +1,14 @@
 import os
-
 import cv2
+from PIL import Image
+
 import matplotlib.pyplot as plt
 import numpy as np
 import random
 import re
 from numpy.lib.type_check import real
+
+from helper_scripts.brightness import increase_brightness, decrease_brightness
 
 
 # Read training set
@@ -60,6 +63,37 @@ def select_training_set(images, names, num_images):
         print("{:<10} | {:>7} | {:>6}".format(name, counts[0], counts[1]))
     print("=============================")
     return np.array(train_images), np.array(test_images), train_images_idx, test_images_idx, train_names, test_names
+
+
+def augment_training_set(images, names):
+    # Make a copy of images and names
+    augmented_images = images[::]
+    augmented_names = names[::]
+
+    # Shift images horizontally by +1, -1, +2 and -2 pixels
+    shifted_images = []
+    for image in range(images.shape[0]):
+        # Reshape the array into a 30x30 matrix
+        image_matrix = images[image].reshape(30, 30)
+        # Shift 2 pixels
+        shifted_image_right = np.roll(image_matrix, 2, axis=1)
+        shifted_image_left = np.roll(image_matrix, -2, axis=1)
+        # Flatten the matrix back into a 1D array
+        shifted_images.append(shifted_image_right.flatten())
+        shifted_images.append(shifted_image_left.flatten())
+        # Shift 1 pixels
+        shifted_image_right = np.roll(image_matrix, 1, axis=1)
+        shifted_image_left = np.roll(image_matrix, -1, axis=1)
+        # Flatten the matrix back into a 1D array
+        shifted_images.append(shifted_image_right.flatten())
+        shifted_images.append(shifted_image_left.flatten())
+        # Append the names
+        for i in range(4):
+            augmented_names.append(names[image])
+    # Add shifted images
+    augmented_images = np.concatenate((augmented_images, np.array(shifted_images)), axis=0)
+
+    return augmented_images, augmented_names
 
 
 # Compute mean face and substract from faces

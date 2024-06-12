@@ -56,7 +56,7 @@ activations = [Tansig(), Tansig(), Softmax()]
 # Network parameters
 params = {
     "learning_rate": 0.1,
-    "epochs": 90,
+    "epochs": 60,
     "target_error": 1e-4,
 }
 

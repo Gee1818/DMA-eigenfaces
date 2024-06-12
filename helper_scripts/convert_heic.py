@@ -25,6 +25,7 @@ for person in names:
         # ...if picture has HEIC extension...
         if file.lower().endswith(".heic"):
             # ...convert to JPEG and save it as such
+            img_count += 1
             heif_file = pillow_heif.open_heif(currentdir + file, convert_hdr_to_8bit=False, bgr_mode=True)
             image = np.array(heif_file)
             image_directory = currentdir + file[:-5] + ".jpg"
