@@ -28,12 +28,8 @@ Este es el orden en el que hay que correr las cosas y entrenar a la red:
 
 `python face_extraction.py` --> Extrae las caras de las imagenes
 
-`python mirror_images.py` --> Espeja las imagenes
-
-`python brightness.py` --> Cambia el brillo a las imagenes
-
 `cd ..`
 
 `python eigenfaces.py` --> Genera las componentes princpales y exporta la matrix para que entrenar la red
 
-`Z_neural_network.py` --> Entrena la red sobre las componentes principales exportadas. Al concluir el entrenamiento se puede decidir guardar los parametros de la red
+`python Z_neural_network.py` --> Entrena la red sobre las componentes principales exportadas. Al concluir el entrenamiento se puede decidir guardar los parametros de la red
