@@ -87,8 +87,8 @@ class n_network:
         
     def load_params(self):
     	for i, layer in enumerate(self.layers):
-            layer.weights = pd.read_csv(f"5.nn_params/weights_{i}.csv", header=None).to_numpy()
-            layer.biases = pd.read_csv(f"5.nn_params/biases_{i}.csv", header=None).to_numpy()
+            layer.weights = pd.read_csv(f"3.nn_params/weights_{i}.csv", header=None).to_numpy()
+            layer.biases = pd.read_csv(f"3.nn_params/biases_{i}.csv", header=None).to_numpy()
             self.trained = True
 
     def __str__(self) -> str:
@@ -101,6 +101,6 @@ class n_network:
 
     def export_params(self):
             for i, layer in enumerate(self.layers):
-                np.savetxt(f"5.nn_params/weights_{i}.csv", layer.weights, delimiter=",")
-                np.savetxt(f"5.nn_params/biases_{i}.csv", layer.biases, delimiter=",")
+                np.savetxt(f"3.nn_params/weights_{i}.csv", layer.weights, delimiter=",")
+                np.savetxt(f"3.nn_params/biases_{i}.csv", layer.biases, delimiter=",")
             print("Parameters exported")

@@ -3,10 +3,10 @@ import json
 import numpy as np
 import pandas as pd
 
-from functions import *
-from functions_nn import *
-from helper_scripts.face_extraction import *
-from Z_clase_red import *
+from helper_scripts.functions_eigen import *
+from helper_scripts.functions_nn import *
+from helper_scripts.clase_red import *
+from helper_scripts.face_detection import *
 
 
 
@@ -49,7 +49,7 @@ projected_faces = np.reshape(
 
 ##################### Network Architecture #####################
 
-with open("5.nn_params/nn_params.json", "r") as json_file:
+with open("3.nn_params/nn_params.json", "r") as json_file:
     nn_architecture = json.load(json_file)
 
 
@@ -97,6 +97,3 @@ print(predictions)
 # Need to read to code to see if and where the filenames are stored
 for i in range(len(names)):
     print(f"The file {names[i]} is {predicted_names [i]}")
-
-
-

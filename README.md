@@ -6,30 +6,26 @@ Estas son las librerías necesarias para correr todo:
 
 * Procesamiento de imágenes: `opencv-python`, `pillow-heif`
 
-## Evaluacion de caras nuevas
+## Evaluación de caras nuevas
 
-Solo se necesitan las librerias `json`, `numpy` y `pandas` para probar nuevas imagenes
+Sólo se necesitan las librerías `json`, `numpy` y `pandas` para probar nuevas imágenes
 
 Para poder evaluar nuevas caras, 
 
-* Se deberan copiar las imagenes a la carpeta `4.test_your_files/` y correr el script de python `Z_test_new_files.py`
+* Se deberán copiar las imágenes a la carpeta `4.test_your_files/` y correr el script de Python `05_test_new_files.py`
 
-* En la consola devolvera el nombre del archivo evaluado y la prediccion de la persona a la que corresponde la imagen
+* La consola devolverá el nombre del archivo evaluado y la predicción de la persona a la que corresponde la imagen
 
-* Las imagenes preprocesadas se guardan en la carpeta `4.test_your_files/preprocessed_test_files/` para verificar la correcta deteccion de la cara en la imagen
+* Las imágenes preprocesadas se guardan en la carpeta `4.test_your_files/preprocessed_test_files/` para verificar la correcta detección de la cara en la imagen
 
 ## Entrenamiento de la red
 
 Este es el orden en el que hay que correr las cosas y entrenar a la red:
 
-`cd helper_scripts/`
+`python 01_convert_heic.py` (15 segundos) --> Convierte imágenes en formato HEIC a jpg
 
-`python convert_heic.py` --> Convierte imagenes en formato HEIC a jpg
+`python 02_face_extraction.py` (6 minutos) --> Extrae las caras de las imágenes
 
-`python face_extraction.py` --> Extrae las caras de las imagenes
+`python 03_eigenfaces.py` (2 segundos) --> Genera las componentes princpales y exporta la matrix para que entrenar la red
 
-`cd ..`
-
-`python eigenfaces.py` --> Genera las componentes princpales y exporta la matrix para que entrenar la red
-
-`python Z_neural_network.py` --> Entrena la red sobre las componentes principales exportadas. Al concluir el entrenamiento se puede decidir guardar los parametros de la red
+`python 04_neural_network.py` (5 segundos) --> Entrena la red sobre las componentes principales exportadas. Al concluir el entrenamiento se puede decidir guardar los parámetros de la red
